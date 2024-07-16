@@ -1,0 +1,11 @@
+{
+  "databaseId": "xxx",
+  "db": {
+    "connectionString": "postgresql://cs_username:cs_password@cs_hostname:1000/cs_database",
+    "user": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "database": "snaplet_development"
+  }
+}

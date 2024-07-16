@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev:type-check",
+      "type": "shell",
+      "command": "yarn type-check --watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      },
+    },
+    {
+      "label": "dev",
+      "dependsOn": [
+        "dev:type-check",
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "date": "2022-05-30T13:22:19.999Z",
+  "name": "firewall-input",
+  "origin": "LOCAL",
+  "tables": [
+    {
+      "schema": "public",
+      "table": "_prisma_migrations",
+      "filename": "public._prisma_migrations.csv"
+    },
+    {
+      "schema": "public",
+      "table": "AccessToken",
+      "filename": "public.AccessToken.csv"
+    },
+    {
+      "schema": "public",
+      "table": "AuditLog",
+      "filename": "public.AuditLog.csv"
+    },
+    {
+      "schema": "public",
+      "table": "DatabaseProvider",
+      "filename": "public.DatabaseProvider.csv"
+    },
+    {
+      "schema": "public",
+      "table": "DbConnection",
+      "filename": "public.DbConnection.csv"
+    },
+    {
+      "schema": "public",
+      "table": "InviteToken",
+      "filename": "public.InviteToken.csv"
+    },
+    {
+      "schema": "public",
+      "table": "Member",
+      "filename": "public.Member.csv"
+    },
+    {
+      "schema": "public",
+      "table": "Organization",
+      "filename": "public.Organization.csv"
+    },
+    {
+      "schema": "public",
+      "table": "PricingPlan",
+      "filename": "public.PricingPlan.csv"
+    },
+    {
+      "schema": "public",
+      "table": "Project",
+      "filename": "public.Project.csv"
+    },
+    {
+      "schema": "public",
+      "table": "ReleaseVersion",
+      "filename": "public.ReleaseVersion.csv"
+    },
+    {
+      "schema": "public",
+      "table": "Snapshot",
+      "filename": "public.Snapshot.csv"
+    },
+    {
+      "schema": "public",
+      "table": "Table",
+      "filename": "public.Table.csv"
+    },
+    {
+      "schema": "public",
+      "table": "TargetDatabase",
+      "filename": "public.TargetDatabase.csv"
+    },
+    {
+      "schema": "public",
+      "table": "User",
+      "filename": "public.User.csv"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+name: Release CLI and packages
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+env:
+  NODE_ENV: production
+
+jobs:
+  release:
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    permissions:
+      contents: write
+    concurrency:
+      group: release-cli
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT_COMMIT }}
+
+      - uses: ./.github/actions/setup-node
+      - name: Install node_modules
+        uses: ./.github/actions/install
+        with:
+          fail-on-cache-miss: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Upload and release CLI
+        working-directory: ./cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          ADMIN_ACCESS_TOKEN: ${{ secrets.ADMIN_ACCESS_TOKEN }}
+        run: |
+          ./scripts/publishToNPM.js || true
+
+          if ./scripts/assertNewRelease.js; then
+            ./scripts/uploadCLI.js
+            ./scripts/createReleaseVersion.js
+          fi
+
+      - name: Upgrade local snaplet dep
+        working-directory: ./cli
+        run: |
+          ../scripts/upgradeSnapletDep.js || true
+
+      - name: Commit and push cli npm package changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(dev): Updates after releasing snaplet npm package"
+          branch: main
+
+      #  after each release we want to trigger an api deploy to be sure they're in sync
+      - name: Release API and WEB
+        env:
+          ADMIN_ACCESS_TOKEN: ${{ secrets.ADMIN_ACCESS_TOKEN }}
+        run: |
+          curl -v -XPOST \
+            -H 'authorization: Bearer '"$ADMIN_ACCESS_TOKEN"'' \
+            -H "Content-type: application/json" \
+            'https://api.snaplet.dev/admin/deployHook' &

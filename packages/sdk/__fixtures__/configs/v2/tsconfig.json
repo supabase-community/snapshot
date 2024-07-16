@@ -1,0 +1,13 @@
+{
+  "files": ["snaplet.config.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "baseUrl": ".",  // This must be specified if "paths" is.
+    "paths": {
+      "@snaplet/copycat": ["../../node_modules/@snaplet/copycat"],
+      "@types/node": ["../../node_modules/@types/node"],
+    }
+  }
+}

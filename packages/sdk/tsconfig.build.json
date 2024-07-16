@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "paths": {
+      "~/*": ["./src/*"],
+    },
+    "emitDeclarationOnly": false,
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "plugins": [
+      { "transform": "typescript-transform-paths" },
+      { "transform": "typescript-transform-paths", "afterDeclarations": true },
+    ],
+  },
+  "include": ["src", "./ambient.d.ts"],
+  "exclude": ["src/**/*.test.ts", "src/testing", "src/testing.ts", "src/generate/testing.ts", "src/templates/testing.ts"]
+}

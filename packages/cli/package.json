@@ -1,0 +1,61 @@
+{
+  "author": {
+    "name": "Snaplet",
+    "url": "https://snaplet.dev"
+  },
+  "bin": "./bin/snaplet.js",
+  "description": "Snaplet CLI",
+  "devDependencies": {
+    "@tsconfig/strictest": "2.0.0",
+    "esbuild-plugin-replace": "1.4.0",
+    "tsup": "6.7.0"
+  },
+  "engines": {
+    "node": ">=18.5.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "homepage": "https://snaplet.dev",
+  "keywords": [
+    "snaplet",
+    "data",
+    "database",
+    "database seeding",
+    "database snapshot",
+    "fake",
+    "fake data generator",
+    "generation",
+    "generator",
+    "mock",
+    "mock data",
+    "postgres",
+    "preview",
+    "prisma",
+    "prisma seed",
+    "seed",
+    "seeding",
+    "snapshot",
+    "synthetic",
+    "synthetic data generation"
+  ],
+  "license": "FSL-1.1-MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "name": "snaplet",
+  "scripts": {
+    "prepareRelease": "./scripts/tasks.mjs prepareRelease",
+    "build": "./scripts/tasks.mjs build"
+  },
+  "types": "./dist/index.d.ts",
+  "version": "0.41.2"
+}

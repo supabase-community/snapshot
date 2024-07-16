@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "axios": "1.5.1",
+    "minimist": "1.2.8"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": ".dts",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "customConditions": ["snaplet_development"],
+    "types": ["vitest/globals"],
+    "sourceMap": true
+  },
+  "include": ["*json", "*.mts", "*.ts", "src"]
+}

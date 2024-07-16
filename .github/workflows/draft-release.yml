@@ -1,0 +1,112 @@
+name: Draft release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  NODE_ENV: production
+
+jobs:
+  draft-release:
+    name: "Draft release"
+    runs-on: ubuntu-latest
+    concurrency: draft-release
+    outputs:
+      release_id: ${{ steps.create-draft-release.outputs.id }}
+      upload_url: ${{ steps.create-draft-release.outputs.upload_url }}
+      version: ${{ steps.package-version.outputs.current-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Output version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+        with:
+          path: cli
+
+      - name: Generate a changelog
+        id: changelog
+        uses: loopwerk/tag-changelog@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config_file: .github/changelog.config.js
+
+      - name: Create a draft release
+        id: create-draft-release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          body: ${{ steps.changelog.outputs.changes }}
+
+  build-cli:
+    name: "Build CLI"
+    needs: [draft-release]
+    strategy:
+      matrix:
+        data: [
+          {
+            os: "buildjet-4vcpu-ubuntu-2204-arm",
+            filename: "snaplet-linux-arm64-${{ needs.draft-release.outputs.version }}",
+          },
+          {
+            os: "buildjet-4vcpu-ubuntu-2204",
+            filename: "snaplet-linux-x64-${{ needs.draft-release.outputs.version }}",
+            npmFilename: "snaplet-npm-${{ needs.draft-release.outputs.version }}.tgz"
+          },
+          {
+            os: "windows-latest",
+            filename: "snaplet-win-x64-${{ needs.draft-release.outputs.version }}.exe",
+          },
+          {
+            os: "macos-13",
+            filename: "snaplet-macos-x64-${{ needs.draft-release.outputs.version }}",
+          }
+        ]
+    runs-on: ${{ matrix.data.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+      - run: yarn install
+
+      - name: Build CLI
+        run: yarn build:binary --force --filter='!@snaplet/seed'
+        shell: bash
+
+      - name: Prepare CLI npm package
+        if: ${{ matrix.data.npmFilename }}
+        working-directory: ./packages/cli
+        run: |
+          yarn install
+          yarn prepareRelease ${{ matrix.data.npmFilename }}
+        shell: bash
+
+      - run: mv ./cli/bin/cli${{ matrix.data.os == 'windows-latest' && '.exe' || '' }} ./cli/bin/${{ matrix.data.filename }}
+
+      - name: Is CLI runnable?
+        run: |
+          ./cli/bin/${{ matrix.data.filename }} --version
+          if ! ./cli/bin/${{ matrix.data.filename }} --help | grep -q snaplet; then exit 1; fi
+        shell: bash
+
+      - name: Upload CLI
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: true
+          files:
+            ./cli/bin/${{ matrix.data.filename }}
+
+      - name: Upload CLI npm package
+        uses: softprops/action-gh-release@v1
+        if: ${{ matrix.data.npmFilename }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: true
+          files:
+            ./packages/cli/${{ matrix.data.npmFilename }}

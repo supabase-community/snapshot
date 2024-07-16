@@ -1,0 +1,25 @@
+name: Build snaplet binary
+
+inputs:
+  lookup-only:
+    description: 'Should only lookup for the cache'
+    required: false
+    default: "false"
+  skip-on-miss:
+    description: 'choose if you want to skip on lookup miss'
+    required: false
+    default: "false"
+outputs:
+  cache-hit:
+    description: "cache has been hit"
+    value: ${{ steps.build-cli-cache.outputs.cache-hit }}
+# Assume your in a workflow with install action already ran
+runs:
+  using: "composite"
+  steps:
+    - name: Build Snaplet CLI
+      if: steps.build-cli-cache.outputs.cache-hit != 'true' && inputs.skip-on-miss != 'true'
+      run: |
+        yarn build:binary -- --targets node18-linux-x64
+        ls -al ./cli/bin
+      shell: bash

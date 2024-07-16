@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Base",
+  "extends": "@tsconfig/node18/tsconfig",
+  "compilerOptions": {
+    "lib": ["es2023"],
+    "resolveJsonModule": true,
+    "emitDeclarationOnly": true,
+    "composite": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  }
+}

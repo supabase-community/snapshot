@@ -1,0 +1,68 @@
+name: Build main shared cache
+
+env:
+  SNAPLET_TARGET_DATABASE_URL: 'postgresql://postgres:postgres@localhost/snaplet_development'
+  DATABASE_URL: 'postgresql://postgres:postgres@localhost/snaplet_development'
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: build-shared-cache-main
+  cancel-in-progress: true
+
+# Build a shared cache for the dependencies to be shared between our PR and workflows
+jobs:
+  build-shared-deps-cache:
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/install
+
+  build-shared-tests-cache:
+    needs: build-shared-deps-cache
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/tests/install
+      # Build and cache snaplet binary
+      - uses: ./.github/actions/tests/build-cli
+        with:
+          lookup-only: true
+      # Install and cache playwright install for e2e web
+      - uses: ./.github/actions/tests/install-playwright
+        with:
+          lookup-only: true
+
+  # Cache our latests success snapshot to avoid re-download in between PR and workflow
+  build-shared-snapshot-cache:
+    needs: build-shared-deps-cache
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    # Right now there is no way to download our snapshot without having to restore it, so sadly we need a database
+    services:
+      postgres:
+        image: postgres:13
+        credentials:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/install
+      # TODO: add a way to download the snapshot without the need to restore it
+      - uses: ./.github/actions/tests/restore-latest-snapshot
+        with:
+          snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+          database-url: postgresql://postgres:postgres@localhost/snaplet_development
+

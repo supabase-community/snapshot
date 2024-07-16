@@ -1,0 +1,33 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "build:binary": {
+      "dependsOn": ["build"],
+      "outputs": ["bin/**"],
+      "cache": false
+    },
+    "bundle:production": {
+      "dependsOn": ["^bundle:production"],
+      "outputs": ["dist/**", "out/**"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "cache": false
+    },
+    "test:e2e": {
+      "cache": false,
+      "dependsOn": ["build"]
+    }
+  },
+  "globalEnv": ["NODE_ENV", "STAGE", "CI_TESTS"]
+}

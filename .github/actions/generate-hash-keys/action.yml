@@ -1,0 +1,19 @@
+name: Generate cache hash keys
+
+outputs:
+  yarn-deps-hash:
+    description: "hash keys used for yarn deps"
+    value: ${{ steps.generate-hash-keys.outputs.yarn-deps }}
+  build-cli-hash:
+    description: "hash keys used for cli build"
+    value: ${{ steps.generate-hash-keys.outputs.build-cli }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate hash keys
+      id: generate-hash-keys
+      run: |
+        echo "yarn-deps=${{ hashFiles('yarn.lock') }}-${{ hashFiles('./api/prisma/schema.prisma') }}" >> $GITHUB_OUTPUT
+        echo "build-cli=${{ hashFiles('./cli/src/**', './packages/sdk/src/**', './packages/cli/**') }}-${{ hashFiles('yarn.lock', './api/prisma/schema.prisma') }}" >> $GITHUB_OUTPUT
+      shell: bash

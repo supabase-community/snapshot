@@ -1,0 +1,60 @@
+name: publish postgres container with snaplet data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * *' # 5 AM everyday
+
+jobs:
+  publish-postgres-container:
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    concurrency:
+      group: publish-postgres-container
+      cancel-in-progress: true
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:13 # Must match the database where snapshot was taken
+        credentials:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: snaplet_development
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+
+      - uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.GHCR_CONTAINER_REGISTRY_SERVER }}
+          username: ${{ secrets.GHCR_CONTAINER_REGISTRY_USER }}
+          password: ${{ secrets.GHCR_CONTAINER_REGISTRY_PASSWORD }}
+
+      - name: Install Snaplet
+        run: curl -sL https://app.snaplet.dev/get-cli | bash
+        env:
+          SNAPLET_DISABLE_TELEMETRY: 1
+
+      - uses: snaplet/publish-postgres-with-data-docker-action@main
+        with:
+          docker-container-registry-server: ghcr.io
+          docker-container-registry-user: snaplet
+          docker-image-name: snaplet-development-database
+        env:
+          SNAPLET_ACCESS_TOKEN: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+          SNAPLET_PROJECT_ID: ckrx7593s162141vrwgmv33u5j
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGPORT: 5432
+          PGDATABASE: snaplet_development

@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "rootDirs": [".", "../sdk"],
+    "paths": {
+      "@snaplet/cli": ["../../cli"],
+      "@snaplet/sdk": ["../sdk"]
+    }
+  },
+  "include": ["src"],
+}

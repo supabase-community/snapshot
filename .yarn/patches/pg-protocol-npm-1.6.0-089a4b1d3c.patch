@@ -1,0 +1,42 @@
+diff --git a/package.json b/package.json
+index 5b5b14312a93fd53250dc6f5f0dffe24cbc59a46..9de6cd59ff13a691fd75bfccdd449cdb7cc5851a 100644
+--- a/package.json
++++ b/package.json
+@@ -15,6 +15,37 @@
+     "ts-node": "^8.5.4",
+     "typescript": "^4.0.3"
+   },
++  "exports": {
++      ".": {
++        "types": "./dist/index.d.ts",
++        "default": "./dist/index.js"
++      },
++      "./buffer-writer": {
++        "types": "./dist/buffer-writer.d.ts",
++        "default": "./dist/buffer-writer.js"
++      },
++      "./messages": {
++        "types": "./dist/messages.d.ts",
++        "default": "./dist/messages.js"
++      },
++      "./parser": {
++        "types": "./dist/parser.d.ts",
++        "default": "./dist/parser.js"
++      },
++      "./dist/buffer-writer": {
++        "types": "./dist/buffer-writer.d.ts",
++        "default": "./dist/buffer-writer.js"
++      },
++      "./dist/messages": {
++        "types": "./dist/messages.d.ts",
++        "default": "./dist/messages.js"
++      },
++      "./dist/parser": {
++        "types": "./dist/parser.d.ts",
++        "default": "./dist/parser.js"
++      },
++      "./package.json": "./package.json"
++  },
+   "scripts": {
+     "test": "mocha dist/**/*.test.js",
+     "build": "tsc",

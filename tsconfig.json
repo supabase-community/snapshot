@@ -1,0 +1,11 @@
+{
+  "references": [
+    { "path": "cli" },
+    { "path": "packages/sdk" },
+  ],
+  "compilerOptions": {
+    "outDir": ".dts"
+  },
+  "files": ["snaplet.config.ts"],
+  "extends": "./tsconfig.base.json",
+}

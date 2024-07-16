@@ -1,0 +1,16 @@
+diff --git a/index.mjs b/index.mjs
+index c6440b9edca315488f1976061edf88803ecac954..76926d256070b8c90f354f4ecb993bff50e6eb9d 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -2,7 +2,9 @@
+ 
+ // Bootstraps yargs for ESM:
+ import esmPlatformShim from './lib/platform-shims/esm.mjs';
+-import {YargsFactory} from './build/lib/yargs-factory.js';
++import { YargsFactory } from './build/lib/yargs-factory.js';
++import { hideBin } from './build/lib/utils/process-argv.js';
+ 
+ const Yargs = YargsFactory(esmPlatformShim);
+-export default Yargs;
++const Argv = Yargs(hideBin(process.argv));
++export default Argv;

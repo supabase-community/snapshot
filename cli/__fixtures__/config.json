@@ -1,0 +1,6 @@
+{
+  "accessToken": "fixture-access-token",
+  "db": {
+    "host": "localhost"
+  }
+}

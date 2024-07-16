@@ -1,0 +1,20 @@
+name: Unpublish extension
+
+on:
+  workflow_dispatch:
+
+env:
+  NODE_ENV: production
+jobs:
+  release-extension:
+    name: "Unpublish extension"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+      - run: yarn install
+      - name: Unpublish extension
+        run: |
+         yes | vsce unpublish Snaplet.snaplet-vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCODE_MARKETPLACE_TOKEN }}

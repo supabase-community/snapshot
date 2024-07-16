@@ -1,0 +1,13 @@
+diff --git a/dist/middleware/checkForBabelConfig.js b/dist/middleware/checkForBabelConfig.js
+index f522c5b7ecbeea1ecde56837113abd34ed2e15be..f386f9c3457bbc9a9b225cb044e7f41fceba93ce 100644
+--- a/dist/middleware/checkForBabelConfig.js
++++ b/dist/middleware/checkForBabelConfig.js
+@@ -21,7 +21,7 @@ var _colors = _interopRequireDefault(require("../lib/colors"));
+ const isUsingBabelRc = () => {
+   return _fastGlob.default.sync('**/*/.babelrc(.*)?', {
+     cwd: (0, _internal.getPaths)().base,
+-    ignore: 'node_modules'
++    ignore: '**/node_modules'
+   }).length > 0;
+ };
+ 

@@ -1,0 +1,10 @@
+name: Setup AWS credentials
+
+runs:
+  using: "composite"
+  steps:
+    - uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.PREVIEW_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.PREVIEW_AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1

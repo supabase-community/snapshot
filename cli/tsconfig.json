@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": ".dts",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "customConditions": ["snaplet_development"],
+    "types": ["vitest/globals"]
+  },
+  "include": ["*.json", "*.mts", "*.ts", "src", "scripts", "e2e", "../packages/proxy/src/proxy"],
+  "references": [
+    { "path": "../packages/sdk" },
+  ]
+}
