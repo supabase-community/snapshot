@@ -14,6 +14,13 @@ const projectConfigSchema = z.object({
   sourceDatabaseUrl: z.string().optional(),
   targetDatabaseUrl: z.string().optional(),
   publicKey: z.string().optional(),
+
+  // s3
+  s3Bucket: z.string().optional(),
+  s3Region: z.string().optional(),
+  s3AccessKeyId: z.string().optional(),
+  s3SecretAccessKey: z.string().optional(),
+  s3Endpoint: z.string().optional()
 })
 
 const getProjectConfigOverrides = () => ({
@@ -24,6 +31,12 @@ const getProjectConfigOverrides = () => ({
   targetDatabaseUrl:
     process.env.SNAPLET_TARGET_DATABASE_URL ?? process.env.SNAPLET_DATABASE_URL,
   publicKey: process.env.SNAPLET_PUBLIC_KEY,
+  // s3
+  s3Bucket: process.env.SNAPLET_S3_BUCKET,
+  s3Region: process.env.SNAPLET_S3_REGION,
+  s3AccessKeyId: process.env.SNAPLET_S3_ACCESS_KEY_ID,
+  s3SecretAccessKey: process.env.SNAPLET_S3_SECRET_ACCESS_KEY,
+  s3Endpint: process.env.SNAPLET_S3_ENDPOINT
 })
 
 export type ProjectConfig = z.infer<typeof projectConfigSchema>

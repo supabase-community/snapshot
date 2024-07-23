@@ -16,6 +16,9 @@
     "snaplet_internal": "bin/snaplet"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.614.0",
+    "@aws-sdk/lib-storage": "3.616.0",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@sentry/integrations": "7.48.0",
     "@sentry/node": "7.48.0",
     "@snaplet/copycat": "5.0.0",
