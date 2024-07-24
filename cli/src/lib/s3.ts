@@ -1,7 +1,11 @@
-import { S3Client, HeadObjectCommand } from '@aws-sdk/client-s3'
+import {
+  S3Client,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import { type Readable } from 'stream'
-import { config } from './config.js'
 
 export type S3Settings = {
   region?: string
@@ -14,53 +18,42 @@ export type S3Settings = {
 export type StorageFile = string | Uint8Array | Buffer | Readable
 
 type UploadToBucketOptions = {
-  filename: string
-  snapshotId: string
-  settings?: S3Settings
-  bytes: number
+  bucket: string
+  key: string
+  client: S3Client
 }
-
-let cachedClient: S3Client
 
 /**
  * initialize an S3 client, if no config
  * is passed in, we will return the existing
  * instance or throw an error.
  * */
-export const initClient = (settings?: S3Settings) => {
-  if (!config && !cachedClient) {
-    throw new Error('No instance found, pass in config to create one.')
-  }
-
-  if (settings) {
-    return new S3Client({
-      region: settings.region,
-      endpoint: settings.endpoint,
-      credentials: {
-        accessKeyId: settings.accessKeyId,
-        secretAccessKey: settings.secretAccessKey,
-      },
-    })
-  } else {
-    return cachedClient
-  }
+export const initClient = (settings: S3Settings) => {
+  return new S3Client({
+    region: settings.region,
+    endpoint: settings.endpoint,
+    credentials: {
+      accessKeyId: settings.accessKeyId,
+      secretAccessKey: settings.secretAccessKey,
+    },
+  })
 }
 
 export const uploadFileToBucket = async (
   body: StorageFile,
   options: UploadToBucketOptions,
-  hooks: {
+  hooks?: {
     onProgress: (progress: number) => void
   }
 ) => {
-  const { filename, snapshotId, settings } = options
+  const { client, bucket, key } = options
 
   const parellelUpload = new Upload({
-    client: initClient(settings),
+    client: client,
     params: {
-      Bucket: settings?.bucket,
-      Key: generateSnapshotFileKey({ filename, snapshotId }),
-      Body: body,
+      Bucket: bucket,
+      Key: key,
+      Body: body
     },
     tags: [
       // TODO_BEFORE_REVIEW: pass in the Snapshot tags
@@ -73,7 +66,7 @@ export const uploadFileToBucket = async (
     if (ev.loaded && ev.total) {
       progress = (ev.loaded / ev.total) * 100
     }
-    hooks.onProgress(progress)
+    hooks?.onProgress(progress)
   })
   await parellelUpload.done()
 }
@@ -95,15 +88,32 @@ export const generateSnapshotFileKey = (options: {
 export const checkIfObjectExists = async (
   bucket: string,
   key: string,
-  settings?: S3Settings
+  client: S3Client
 ) => {
   try {
-    const client = await initClient(settings)
     await client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }))
-
     return true
   } catch (err) {
-    console.log(err)
     return false
   }
+}
+
+export const listBucketObjects = async (bucket: string, client: S3Client) => {
+  const listCommand = new ListObjectsV2Command({
+    Bucket: bucket,
+  })
+
+  return client.send(listCommand)
+}
+
+export const downloadFileFromBucket = async (
+  bucket: string,
+  key: string,
+  options: { client: S3Client }
+) => {
+  const getCommand = new GetObjectCommand({ Bucket: bucket, Key: key })
+  const output = await options.client.send(getCommand)
+
+  const unit8Array = await output.Body?.transformToByteArray()
+  return unit8Array ? Buffer.from(unit8Array) : undefined
 }

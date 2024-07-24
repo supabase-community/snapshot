@@ -10,6 +10,8 @@ import { activity } from '~/lib/spinner.js'
 import { uploadSnapshot } from '~/lib/snapshotStorage.js'
 import { getOrCreateSnapshotIdStep } from './steps/getOrCreateSnapshot.js'
 import { needs } from '~/components/needs/index.js'
+import { snapshotListStorage } from '../list/lib/storage.js'
+import path from 'path'
 
 export async function handler(options: CommandOptions) {
   const { snapshotName: startsWith, latest, tags, noEncrypt } = await options
@@ -66,6 +68,20 @@ export async function handler(options: CommandOptions) {
   } finally {
     act.done()
   }
+
+  const storage = await snapshotListStorage(
+    settings,
+    path.join(cache.paths.base, '..')
+  )
+
+  storage.insertSnapshot({
+    id: snapshotId,
+    name: sss.summary.name,
+    tags: sss.summary.tags,
+    createdAt: new Date().toString(),
+  })
+
+  await storage.commit()
 
   console.log(`Snapshot "${sss.summary.name}" shared`)
 }

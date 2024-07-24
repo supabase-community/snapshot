@@ -82,6 +82,7 @@
     "@types/prompts": "2.4.4",
     "@types/semver": "7.3.13",
     "@types/sinon": "10.0.14",
+    "@types/temp": "^0.9.4",
     "@types/uuid": "8.3.4",
     "@types/yargs": "17.0.24",
     "axios": "0.27.2",

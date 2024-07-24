@@ -10,7 +10,7 @@ import { getSnapshotFilePaths } from '@snaplet/sdk/cli'
 import md5File from 'md5-file'
 
 import { xdebugShare } from '~/commands/snapshot/actions/share/debugShare.js'
-import { S3Settings, StorageFile, uploadFileToBucket } from '~/lib/s3.js'
+import { generateSnapshotFileKey, initClient, S3Settings, StorageFile, uploadFileToBucket } from '~/lib/s3.js'
 
 const pipeline = util.promisify(stream.pipeline)
 
@@ -212,13 +212,13 @@ const uploadFile = async (
   xdebugShare(`upload file ${filepath} completed`)
 
   const fileToUpload = fs.createReadStream(filepath)
+  const snapshotKey = generateSnapshotFileKey({ filename, snapshotId })
   await uploadFileToBucket(
     fileToUpload,
     {
-      bytes,
-      filename,
-      snapshotId,
-      settings,
+      bucket: settings.bucket,
+      key: snapshotKey,
+      client: initClient(settings)
     },
     {
       onProgress,
