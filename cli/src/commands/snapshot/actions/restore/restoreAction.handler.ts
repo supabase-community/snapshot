@@ -12,14 +12,12 @@ import { exitWithError } from '~/lib/exit.js'
 import { fmt } from '~/lib/format.js'
 import { teardownAndExit } from '~/lib/handleTeardown.js'
 import { getHosts } from '~/lib/hosts/hosts.js'
-import { trpc } from '~/lib/trpc.js'
 
 import SnapshotCache from './lib/SnapshotCache.js'
 import SnapshotImporter from './lib/SnapshotImporter/SnapshotImporter.js'
 import { CommandOptions } from './restoreAction.types.js'
 import { createConstraints } from './steps/createConstraints.js'
 import { displaySnapshotSummary } from './steps/displayInfo.js'
-import { downloadCloudSnapshot } from './steps/downloadCloudSnapshot.js'
 import { dropConstraints } from './steps/dropConstraints.js'
 import { fixSequences } from './steps/fixSequences.js'
 import { fixViews } from './steps/fixViews.js'
@@ -28,12 +26,9 @@ import { importTablesData } from './steps/importTableData.js'
 import { resetDatabase } from './steps/resetDatabase.js'
 import { truncateTables } from './steps/truncateTables.js'
 import { vacuumTables } from './steps/vacuumTables.js'
-import { captureEvent } from '~/lib/telemetry.js'
 import { filterTables } from './steps/filterTables.js'
 
 export async function handler(options: CommandOptions) {
-  await captureEvent('$command:snapshot restore:start', { options })
-  await needs.accessToken()
   const connString = await needs.targetDatabaseUrl()
   await needs.databaseConnection(connString)
 
@@ -99,14 +94,7 @@ export async function handler(options: CommandOptions) {
 
   // todo(justinvdm, 13 June 2023): Remove once all users are using v2 encryption snapshots
   if (!sss?.summary?.encryptionPayload && sss?.summary?.encryptedSessionKey) {
-    // context(justinvdm, 13 June 2023): The only cases where we encrypt
-    // are for logged in users (captures on cloud and encrypting when sharing to cloud),
-    // so we can assume we have a project id
-    sss.summary.encryptionPayload =
-      await trpc.snapshot.getLegacyPublicEncryptionPayload.query({
-        publicKey: await needs.publicKey(),
-        encryptedSessionKeyHex: sss.summary.encryptedSessionKey,
-      })
+    // sss.summary.encryptionPayload = // TODO_BEFORE_REVIEW: read encryption file from a value
   }
 
   if (sss?.summary?.encryptionPayload) {
@@ -135,20 +123,6 @@ export async function handler(options: CommandOptions) {
 
   const snapshotCache = new SnapshotCache(sss)
   console.log('┌ Fetch step')
-  let transferred = 0
-  if (sss.origin !== 'LOCAL') {
-    if (!sss.summary.snapshotId) {
-      throw new Error(
-        '`snapshotId` not found for snapshot summary. This should not happen.'
-      )
-    }
-    transferred = await downloadCloudSnapshot({
-      snapshotId: sss.summary.snapshotId,
-      snapshotCache,
-      schemaOnly: false,
-      showProgress: progress,
-    })
-  }
 
   const resetDatabaseSteps = [resetDatabase]
   const importSchemaSteps = [importSchema]
@@ -186,7 +160,6 @@ export async function handler(options: CommandOptions) {
     partialRestore: !schema || !reset,
   })
   let errors: string[] = []
-  await captureEvent('$command:snapshot restore:processing')
   for (const step of restoreSteps) {
     const stepErrors = await step(importer, {
       tables: options.tables ?? [],
@@ -206,14 +179,6 @@ export async function handler(options: CommandOptions) {
     if (errors.some((e) => e.startsWith('[Data] Error:'))) {
       await exitWithError('SNAPSHOT_RESTORE_ERROR')
     }
-  }
-
-  if (sss?.summary?.snapshotId) {
-    await trpc.snapshot.incrementRestoreCount.mutate({
-      snapshotId: sss.summary.snapshotId!,
-      fromCache: transferred === 0,
-      transferred,
-    })
   }
 
   console.log()

@@ -5,7 +5,6 @@ import _ from 'lodash'
 import { config } from '~/lib/config.js'
 
 import { AbsPathSnapshotHost } from './absPathSnapshotHost.js'
-import { CloudSnapshotHost } from './cloudSnapshotHost.js'
 import { LocalSnapshotHost } from './localSnapshotHost.js'
 
 export interface FilterSnapshotRules {
@@ -14,7 +13,7 @@ export interface FilterSnapshotRules {
 }
 
 export interface Host {
-  type: 'cloud' | 'local' | 'abspath'
+  type: 'local' | 'abspath'
 
   getLatestSnapshot(): Promise<CloudSnapshot | undefined>
   getAllSnapshots(): Promise<CloudSnapshot[]>
@@ -101,14 +100,6 @@ const getLocalHost = async () => {
   return null
 }
 
-const getCloudHost = async () => {
-  const projectConfig = await config.getProject()
-  if (projectConfig.projectId) {
-    return new CloudSnapshotHost({ projectId: projectConfig.projectId })
-  }
-  return null
-}
-
 export type HostType = Host['type']
 type GetHostsOptions = {
   only?: HostType[]
@@ -116,7 +107,6 @@ type GetHostsOptions = {
 export const getHosts = async (options?: GetHostsOptions) => {
   const hosts = await Promise.all([
     await getLocalHost(),
-    await getCloudHost(),
     new AbsPathSnapshotHost(),
   ])
   return new Hosts({

@@ -5,7 +5,6 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NODE_ENV?: string
-      SNAPLET_DISABLE_TELEMETRY?: string
 
       SNAPLET_ACCESS_TOKEN?: string
       SNAPLET_PROJECT_ID?: string

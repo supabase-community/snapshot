@@ -2,7 +2,6 @@ import {
   generateV2ConfigTypes,
   generateRSAKeys,
   getTransform,
-  TableShapePredictions,
   DataModel,
   IntrospectedStructure,
   GenerateTransformOptions,
@@ -86,12 +85,10 @@ export const actGenerateTransform = async (
   structure: Pick<IntrospectedStructure, 'tables'>,
   filePath: string,
   dryRun: boolean,
-  tableShapePredictions?: TableShapePredictions[],
   generateSections?: GenerateTransformOptions['generateSections']
 ) => {
   const { generateTransform } = await getTransform()
   const source = await generateTransform(structure.tables, {
-    tableShapePredictions,
     generateSections,
   })
   if (dryRun) {

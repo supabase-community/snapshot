@@ -9,7 +9,6 @@ import {
 } from '../../paths.js'
 
 const projectConfigSchema = z.object({
-  projectId: z.string().optional(),
   snapshotId: z.string().optional(),
   sourceDatabaseUrl: z.string().optional(),
   targetDatabaseUrl: z.string().optional(),
@@ -17,7 +16,6 @@ const projectConfigSchema = z.object({
 })
 
 const getProjectConfigOverrides = () => ({
-  projectId: process.env.SNAPLET_PROJECT_ID,
   snapshotId: process.env.SNAPLET_SNAPSHOT_ID,
   sourceDatabaseUrl:
     process.env.SNAPLET_SOURCE_DATABASE_URL ?? process.env.SNAPLET_DATABASE_URL,

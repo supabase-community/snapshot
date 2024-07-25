@@ -173,7 +173,6 @@ jobs:
       - name: Test Snaplet CLI E2E
         run: yarn workspace cli test:e2e
         env:
-          SNAPLET_DISABLE_TELEMETRY: 1
           DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
           SNAPLET_TARGET_DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_e2e_cli
 

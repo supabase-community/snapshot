@@ -3290,8 +3290,6 @@ __metadata:
     "@sentry/node": 7.48.0
     "@snaplet/copycat": 5.0.0
     "@snaplet/sdk": "workspace:*"
-    "@trpc/client": 10.29.1
-    "@trpc/server": 10.29.1
     "@types/better-sqlite3": 7.6.4
     "@types/cli-progress": 3.11.0
     "@types/columnify": 1.5.1

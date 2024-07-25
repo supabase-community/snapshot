@@ -19,7 +19,6 @@ import { initConfigOrExit } from '~/lib/initConfigOrExit.js'
 import { activity } from '~/lib/spinner.js'
 
 import { CommandOptions } from './generateAction.types.js'
-import { trpc } from '~/lib/trpc.js'
 import { xdebugConfigGenerate } from '../../debugConfig.js'
 import { ConnectionString } from '@snaplet/sdk/cli'
 import { getSentry } from '~/lib/sentry.js'
@@ -110,31 +109,6 @@ export async function generateConfigTypesDefinitions(props: {
   }
 }
 
-async function getTablesShapePrediction(projectId: string) {
-  const act = activity('Shape Prediction', 'Detecting PII fields...')
-  xdebugConfigGenerate(
-    'Generate transform - Checking for projectId which is required for shape prediction.'
-  )
-  try {
-    xdebugConfigGenerate(`Generate transform - ProjectId: ${projectId}`)
-    const tableShapePredictions = await trpc.project.shapePrediction.query({
-      projectId,
-    })
-    xdebugConfigGenerate(
-      `Generate transform - Shape prediction result: ${JSON.stringify(
-        tableShapePredictions,
-        null,
-        2
-      )}`
-    )
-    act.done()
-    return tableShapePredictions
-  } catch (e) {
-    act.fail(`${e}`)
-    return []
-  }
-}
-
 export async function handler({
   dryRun,
   type,
@@ -164,7 +138,6 @@ export async function handler({
   )
   act.done()
 
-  const { config } = await initConfigOrExit()
   if (type.includes('typedefs')) {
     await generateConfigTypesDefinitions({
       connString: connString.toString(),
@@ -174,14 +147,7 @@ export async function handler({
     })
   }
 
-  let tableShapePredictions: Awaited<
-    ReturnType<typeof getTablesShapePrediction>
-  > = []
   if (type.includes('transform')) {
-    const projectId = (await config.getProject()).projectId
-    if (projectId) {
-      tableShapePredictions = await getTablesShapePrediction(projectId)
-    }
     act.info('Generate transform config...')
     const structure = await withDbClient(introspectDatabaseV3, {
       connString: connString.toString(),
@@ -189,8 +155,7 @@ export async function handler({
     await actGenerateTransform(
       structure,
       paths.snapletConfig,
-      dryRun,
-      tableShapePredictions
+      dryRun
     )
     act.done()
   }

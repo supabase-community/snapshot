@@ -42,8 +42,6 @@ jobs:
 
       - name: Install Snaplet
         run: curl -sL https://app.snaplet.dev/get-cli | bash
-        env:
-          SNAPLET_DISABLE_TELEMETRY: 1
 
       - uses: snaplet/publish-postgres-with-data-docker-action@main
         with:
@@ -51,8 +49,6 @@ jobs:
           docker-container-registry-user: snaplet
           docker-image-name: snaplet-development-database
         env:
-          SNAPLET_ACCESS_TOKEN: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
-          SNAPLET_PROJECT_ID: ckrx7593s162141vrwgmv33u5j
           PGHOST: localhost
           PGUSER: postgres
           PGPASSWORD: postgres
