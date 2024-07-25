@@ -1,5 +1,3 @@
-import type { StorageFile } from 'api'
-
 import fs from 'fs-extra'
 import fg from 'fast-glob'
 import got from 'got-cjs'
@@ -11,8 +9,8 @@ import pMap from 'p-map'
 import { getSnapshotFilePaths } from '@snaplet/sdk/cli'
 import md5File from 'md5-file'
 
-import { trpc } from '~/lib/trpc.js'
 import { xdebugShare } from '~/commands/snapshot/actions/share/debugShare.js'
+import { generateSnapshotFileKey, initClient, S3Settings, StorageFile, uploadFileToBucket } from '~/lib/s3.js'
 
 const pipeline = util.promisify(stream.pipeline)
 
@@ -129,39 +127,46 @@ const download = async (options: {
   return destination
 }
 
-export async function uploadSnapshot(options: {
-  snapshotId: string
-  paths: ReturnType<typeof getSnapshotFilePaths>
-  onProgress: (percentage: string) => Promise<void>
-}) {
+export async function uploadSnapshot(
+  snapshotId: string,
+  paths: ReturnType<typeof getSnapshotFilePaths>,
+  options: {
+    settings: S3Settings
+    onProgress: (percentage: string) => Promise<void>
+  }
+) {
   xdebugShare('Starting snapshot upload')
-  const { snapshotId, paths, onProgress } = options
+  const { settings, onProgress } = options
 
+  // find all the snapshot files
   const uploadFiles = await fg('**/*.*', { cwd: paths.base, absolute: true })
   xdebugShare('Files to upload: ')
   xdebugShare(uploadFiles)
+
+  //
   const totalBytes = getTotalSize(uploadFiles)
   xdebugShare(`Total bytes to upload: ${totalBytes}`)
 
-  let transferred = 0
-  let lastPercentage = '0'
-  const newFiles: Record<string, StorageFile> = {}
+  /** percentage of files uploaded */
+  let currentTotalProgress = '0'
+
   for (const filepath of uploadFiles) {
     const filename = path.relative(paths.base, filepath)
     xdebugShare(`Uploading file:  ${filename}`)
-    const result = await upload({
+
+    await uploadFile(settings, {
       snapshotId,
       filename,
       filepath,
-      async onProgress(e) {
+      async onProgress(p) {
         xdebugShare(`Uploading file ${filename} progress`)
         try {
-          transferred += e.delta
-          const percentage = ((transferred / totalBytes) * 100).toFixed(2)
-          // context(peterp, 12 July 2023): We submit duplicate events.
-          if (lastPercentage !== percentage) {
-            await onProgress(percentage)
-            lastPercentage = percentage
+          const newProgress = p.toFixed(2)
+
+          // prevent duplicate events
+          if (currentTotalProgress !== newProgress) {
+            await onProgress(newProgress)
+            currentTotalProgress = newProgress
           }
         } catch (e) {
           xdebugShare(`Uploading file ${filename} progress error`)
@@ -170,30 +175,21 @@ export async function uploadSnapshot(options: {
         xdebugShare(`Uploading progress finished`)
       },
     })
-    xdebugShare(`Uploaded file:  ${filename}`)
-    newFiles[filename] = result
-  }
 
-  await trpc.snapshot.storage.append.mutate({
-    snapshotId,
-    files: newFiles,
-  })
+    xdebugShare(`Uploaded file:  ${filename}`)
+  }
 }
 
-const upload = async (options: {
-  filepath: string
-  filename: string
-  snapshotId: string
-  onProgress: (e: createProgressStream.Progress) => Promise<void>
-}): Promise<StorageFile> => {
+const uploadFile = async (
+  settings: S3Settings,
+  options: {
+    filepath: string
+    filename: string
+    snapshotId: string
+    onProgress: (progres: number) => void
+  }
+) => {
   const { filepath, filename, snapshotId, onProgress } = options
-
-  const { uploadURL, bucketKey } = await trpc.snapshot.storage.uploadURL.mutate(
-    {
-      snapshotId,
-      filename,
-    }
-  )
 
   const md5 = md5File.sync(filepath)
   const bytes = fs.statSync(filepath).size
@@ -206,22 +202,31 @@ const upload = async (options: {
     More information: https://docs.snaplet.dev/core-concepts/capture#subset-data
     `)
   }
-  const progress = createProgressStream({ length: bytes, time: 100 })
-  progress.on('progress', onProgress)
 
-  xdebugShare(`upload file ${filepath} to ${uploadURL} with ${bytes} bytes`)
+  xdebugShare(`upload file ${filepath} with ${bytes} bytes`)
   xdebugShare(
-    `upload file ${filepath} to ${uploadURL} on bucket ${bucketKey} with ${md5} md5`
+    `upload file ${filepath} on bucket ${settings.bucket} with ${md5} md5`
   )
-  await got.put({
-    url: uploadURL,
-    body: fs.createReadStream(filepath).pipe(progress),
-    headers: {
-      'Content-Length': bytes.toString(),
+
+  //
+  xdebugShare(`upload file ${filepath} completed`)
+
+  const fileToUpload = fs.createReadStream(filepath)
+  const snapshotKey = generateSnapshotFileKey({ filename, snapshotId })
+  await uploadFileToBucket(
+    fileToUpload,
+    {
+      bucket: settings.bucket,
+      key: snapshotKey,
+      client: initClient(settings)
     },
-  })
-  xdebugShare(`upload file ${filepath} to ${uploadURL} completed`)
-  return { bytes, filename, bucketKey, md5 }
+    {
+      onProgress,
+    }
+  )
+
+  xdebugShare(`upload file ${filepath} completed`)
+  return { bytes, filename, bucketKey: settings.bucket, md5 }
 }
 
 const getTotalSize = (files: string[]) => {

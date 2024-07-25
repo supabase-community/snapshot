@@ -4,7 +4,7 @@ import { databaseConnection } from './databaseConnection.js'
 import { pgDumpCliCommand } from './pgDumpCliCommand.js'
 import { privateKey } from './privateKey.js'
 import { publicKey } from './publicKey.js'
-import { project } from './project.js'
+import { s3Settings } from './s3Settings.js'
 import { projectId } from './projectId.js'
 import { projectPathsV2 } from './projectPaths.js'
 import { snapshot } from './snapshot.js'
@@ -18,7 +18,7 @@ export const needs = {
   pgDumpCliCommand,
   privateKey,
   publicKey,
-  project,
+  s3Settings,
   projectId,
   snapshot,
   validConnectionString,

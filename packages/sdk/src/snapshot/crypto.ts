@@ -23,6 +23,7 @@ export interface EncryptionPayload {
 
 const DEFAULT_ENCRYPT_VERSION = '2'
 
+// TODO_BEFORE_REVIEW: use the latest version of encryption
 export const generateEncryptionPayload = (
   publicKey: string,
   version?: EncryptVersion

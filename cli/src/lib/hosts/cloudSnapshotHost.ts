@@ -3,6 +3,8 @@ import { trpc } from '~/lib/trpc.js'
 import type { FilterSnapshotRules, Host } from './hosts.js'
 import { CloudSnapshot, determineExecTaskStatus } from '@snaplet/sdk/cli'
 
+import { type SnapshotListStorage } from '~/commands/snapshot/actions/list/lib/storage.js'
+
 type DbRetrievedSnapshot = NonNullable<
   Awaited<ReturnType<typeof trpc.snapshot.latest.query>>
 >
@@ -53,34 +55,23 @@ function snapshotToCloudSnapshot(result: DbRetrievedSnapshot): CloudSnapshot {
 }
 
 export class CloudSnapshotHost implements Host {
-  public type = 'cloud' as const
-  private projectId: string
-
-  constructor(o: { projectId: string }) {
-    this.projectId = o.projectId
+  storage: SnapshotListStorage
+  constructor(storage: SnapshotListStorage) {
+    this.storage = storage
   }
 
-  public getLatestSnapshot = async () => {
-    const result = await trpc.snapshot.latest.query({
-      databaseId: this.projectId,
-    })
-    if (!result) {
-      return undefined
-    }
+  getLatestSnapshot = async () => {
+    const result = this.storage.getLatestSnapshot()
     return snapshotToCloudSnapshot(result)
   }
-  public getAllSnapshots = async () => {
-    const snapshots = await trpc.snapshot.list.query({
-      databaseId: this.projectId,
-    })
-    const css = snapshots.map(snapshotToCloudSnapshot)
-    return css
+
+  getAllSnapshots = async () => {
+    const snapshots = this.storage.getSnapshotsMany()
+    return snapshots
   }
-  public filterSnapshots = async (rules: FilterSnapshotRules) => {
-    const snapshots = await trpc.snapshot.filter.query({
-      databaseId: this.projectId,
-      rules,
-    })
+
+  filterSnapshots = async (rules: FilterSnapshotRules) => {
+    const snaphots = this.storage.getSnapshotsMany(rules)
     return snapshots.map(snapshotToCloudSnapshot)
   }
 }

@@ -21,7 +21,7 @@ export type CloudSnapshot = {
   status: keyof typeof SnapshotStatus
   summary: SnapshotSummary
   /**
-   * Locally cached snapshots are stored on the disk.
+   * Locally cached snapshots are stored on the disk (e.g. .snaplet/snapshots/**).
    * This is the absolute path to the cached snapshot.
    * Populated by `LocalSnapshotHost`
    */

@@ -104,7 +104,7 @@ const getLocalHost = async () => {
 const getCloudHost = async () => {
   const projectConfig = await config.getProject()
   if (projectConfig.projectId) {
-    return new CloudSnapshotHost({ projectId: projectConfig.projectId })
+    return new CloudSnapshotHost()
   }
   return null
 }
