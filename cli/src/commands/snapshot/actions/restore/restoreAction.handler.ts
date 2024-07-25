@@ -183,12 +183,6 @@ export async function handler(options: CommandOptions) {
 
   console.log()
   console.log('🎉 Snapshot restored')
-
-  await captureEvent('$command:snapshot restore:end', {
-    options,
-    snapshotId: sss?.summary?.snapshotId ?? null,
-    snapshotDate: new Date(sss?.summary.date).toISOString(),
-  })
 }
 
 const failDueToPrivateKeyMismatch = async () => {

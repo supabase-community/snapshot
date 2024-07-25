@@ -53,7 +53,6 @@ export async function runSnapletCLI(
     (await getTestAccessToken(SNAPLET_PROJECT_ID ?? VIDEOLET_PROJECT_ID))
 
   const env = {
-    SNAPLET_DISABLE_TELEMETRY: '1',
     NODE_ENV: 'development',
     SNAPLET_HOSTNAME: 'http://localhost:8910',
     SNAPLET_API_HOSTNAME: 'http://localhost:8911',

@@ -24,7 +24,6 @@ import {
 import { copycat } from '@snaplet/copycat'
 import { mergeUserModels } from '../utils/mergeUserModels.js'
 import { Json } from '~/types.js'
-import { captureThrottledEvent } from '../telemetry.js'
 import { dedupePreferLast } from '../utils/dedupePreferLast.js'
 import { serializeModelValues, serializeValue } from './serialize.js'
 import { checkConstraints } from '../constraints.js'
