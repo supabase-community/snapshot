@@ -117,6 +117,10 @@ class SnapshotListStorage {
   }
 }
 
+export type SnapshotListStorage = Awaited<
+  ReturnType<typeof snapshotListStorage>
+>
+
 export const snapshotListStorage = async (
   settings: S3Settings,
   /** base `.snaplet` folder */
@@ -128,15 +132,31 @@ export const snapshotListStorage = async (
   const db = storage.getDatabase()
 
   return {
-    getSnapshotsMany: () => {
+    getSnapshotsMany: (rules?: { startsWith?: string }) => {
       return db
-        .prepare('SELECT * FROM snapshots')
-        .all()
+        .prepare(
+          [
+            'SELECT * FROM snapshots',
+            rules?.startsWith ? 'WHERE ? LIKE name || %' : null,
+          ].join(' ')
+        )
+        .all(rules?.startsWith)
         .map((r: any) => ({
           id: r.id,
           name: r.name,
           tags: r.tags,
           createdAt: r.createdAt,
+        }))
+    },
+    getLatestSnapshot: () => {
+      return db
+        .prepare('SELECT * FROM snapshots ORDER BY created_at LIMIT 1')
+        .all()
+        .map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          tags: r.tags,
+          createdAt: r.created_at,
         }))
     },
     insertSnapshot: (data: {
@@ -152,13 +172,13 @@ export const snapshotListStorage = async (
           `'${data.id}'`,
           `'${data.name}'`,
           `'${data.createdAt}'`,
-          data.tags ? `'${data.tags.toString()}'` : '[]',
+          data.tags ? `[${data.tags.toString()}]` : '[]',
         ].join(',')}
       )`)
     },
     /**
      * save current database instance to S3
-     * bucket, will destroy the
+     * bucket, will automatically delete the
      */
     commit: async (
       opts: {
