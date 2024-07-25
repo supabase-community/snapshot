@@ -2,6 +2,5 @@
   "targetDatabaseUrl": "postgresql://postgres@localhost:5432/snaplet_development",
   "sourceDatabaseUrl": "postgresql://postgres@localhost:5432/snaplet_development",
   "s3Bucket": "snaplet",
-  "s3Region": "weur",
-  "s3Endpoint": "https://5a66eef6188e04b4072ce0caa4a95e24.r2.cloudflarestorage.com"
+  "s3Region": "weur"
 }
