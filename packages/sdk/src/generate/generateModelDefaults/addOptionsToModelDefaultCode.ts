@@ -17,6 +17,7 @@ export const addOptionsToModelDefaultCode = async (code: string) => {
     CallExpression(path) {
       if (
         !(
+          // @ts-ignore
           t.isMemberExpression(path.node?.callee) &&
           t.isIdentifier(path.node.callee.object) &&
           path.node.callee.object.name === 'copycat'
@@ -29,6 +30,7 @@ export const addOptionsToModelDefaultCode = async (code: string) => {
 
       // If there is an options object, spread in `options`
       // e.g. copycat.email(seed, { limit: 10 }) -> copycat.email(seed, { limit: 10, ...options })
+      // @ts-ignore
       if (t.isObjectExpression(lastArg)) {
         lastArg.properties.push(t.spreadElement(t.identifier('options')))
       }

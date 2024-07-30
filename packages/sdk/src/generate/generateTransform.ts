@@ -209,6 +209,7 @@ async function _getTransform() {
     context: GenerateTransformContext
   ) => {
     const body = objectLiteral(
+      // @ts-ignore
       table.columns
         // If a column is generated ALWAYS, it's a computed column it won't have any data in the snapshot
         .filter((c) => c.generated !== 'ALWAYS')
@@ -325,18 +326,22 @@ async function _getTransform() {
           typeof value === 'boolean' || typeof value === 'string'
             ? value === 'structure'
               ? t.stringLiteral(value)
+              // @ts-ignore
               : t.booleanLiteral(value)
             : // Level two of the structure { schemaName: { $default, tableName: string, $extensions: {} | boolean } }
               t.objectExpression(
+                // @ts-ignore
                 Object.entries(value).map(([key, value]) => {
                   return t.objectProperty(
                     t.identifier(key),
                     typeof value === 'boolean' || typeof value === 'string'
                       ? value === 'structure'
                         ? t.stringLiteral(value)
+                        // @ts-ignore
                         : t.booleanLiteral(value)
                       : // Level three of the structure { $extensions: boolean | { extensionName: boolean } }
                         t.objectExpression(
+                          // @ts-ignore
                           Object.entries(value).map(([key, value]) => {
                             return t.objectProperty(
                               t.identifier(key),
@@ -344,10 +349,12 @@ async function _getTransform() {
                                 ? t.booleanLiteral(value)
                                 : // Level four of the structure { extensionName: boolean }
                                   t.objectExpression(
+                                    // @ts-ignore
                                     Object.entries(value).map(
                                       ([key, value]) => {
                                         return t.objectProperty(
                                           t.identifier(key),
+                                          // @ts-ignore
                                           t.booleanLiteral(value)
                                         )
                                       }
@@ -424,6 +431,7 @@ async function _getTransform() {
       includeEmpty: false,
       includePiiOnly: true,
       ...options,
+      // @ts-ignore
       templates: compileTemplates({
         ...DEFAULT_TEMPLATES,
         ...options?.templates,
@@ -476,6 +484,7 @@ async function _getTransform() {
     let sourceText = ''
 
     for (const statement of statements) {
+      // @ts-ignore
       sourceText += generate(statement).code
     }
     return sourceText
@@ -484,6 +493,7 @@ async function _getTransform() {
   const generateCopycatSetHashKey = (
     copycatSecretKey = randomBytes(12).toString('base64')
   ): t.Node =>
+    // @ts-ignore
     template.statement.ast(
       `copycat.setHashKey('${copycatSecretKey}');`,
       baseTemplateOptions

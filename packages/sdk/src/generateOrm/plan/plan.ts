@@ -119,10 +119,8 @@ export class Plan implements IPlan {
   }
 
   async run() {
-    captureThrottledEvent('$call:plan:run:start')
     const store = await this.generate()
     await this.runStatements?.(store.toSQL())
-    captureThrottledEvent('$call:plan:run:end')
     return store._store
   }
 

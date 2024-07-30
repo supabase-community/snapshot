@@ -19,11 +19,13 @@ function updateConfig(
   traverse(ast, {
     CallExpression(path) {
       if (
+        // @ts-ignore
         t.isIdentifier(path.node.callee, { name: 'defineConfig' }) &&
         path.node.arguments.length > 0
       ) {
         const arg = path.node.arguments[0]
 
+        // @ts-ignore
         if (t.isObjectExpression(arg)) {
           // Filter properties to get only ObjectProperty type
           const objectProperties = arg.properties.filter(
@@ -69,6 +71,7 @@ function valueToAst(
     // Wrap the function string in an object literal and parse it
     const wrapperAst = parser.parseExpression(`({fn: ${value.toString()}})`)
     // Make sure we got an ObjectExpression node
+    // @ts-ignore
     if (!t.isObjectExpression(wrapperAst)) {
       throw new Error('Expected an ObjectExpression node')
     }

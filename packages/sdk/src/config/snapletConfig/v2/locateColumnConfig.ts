@@ -74,6 +74,7 @@ const findColumnNode = (
       const arg = path.node.argument
 
       if (arg?.type === 'ObjectExpression') {
+        // @ts-ignore
         columnNode = findPropertyNode(arg, columnName)
         path.stop()
       }
@@ -94,6 +95,7 @@ const doLocateColumnConfig = (
   const ast = parser.parse(source, { sourceType: 'module' })
 
   const locations: ColumnConfigLocations = DEFAULT_COLUMN_CONFIG_LOCATION
+  // @ts-ignore
   const configNode = findConfigNode(deps, ast)
 
   const transformConfigNode = configNode
