@@ -74,10 +74,6 @@ const fetchDbVersionInfo = (connString: ConnectionString) =>
     ({ rows: [version] }) => version
   )
 
-const fetchProjectId = async () => {
-  return (await config.getProject()).projectId
-}
-
 export const addCaptureErrorContext = async (
   error: Error,
   connString: ConnectionString
@@ -95,7 +91,6 @@ export const addCaptureErrorContext = async (
         versionInfo: () => fetchDbVersionInfo(connString),
       },
       snaplet: {
-        projectId: fetchProjectId,
         IS_CI,
       },
       errorData: { ...error },

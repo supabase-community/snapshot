@@ -1,11 +1,18 @@
-import { IntrospectedStructure } from '@snaplet/sdk/cli'
-import { SnapshotProgress } from '~/lib/updateExecTaskProgress.js'
+import { IntrospectedStructure, SNAPSHOT_STEPS } from '@snaplet/sdk/cli'
+
 import type TypedEmitter from '~/lib/typed-emitter.js'
 
 type CopyTableBaseData = {
   schema: string
   tableName: string
 }
+
+export interface SnapshotProgress {
+  step: (typeof SNAPSHOT_STEPS)[number]
+  completed: number
+  metadata?: Record<string, any>
+}
+
 type SnapshotCaptureEventMap = {
   progress: (data: SnapshotProgress) => void
   structure: (data: IntrospectedStructure) => void

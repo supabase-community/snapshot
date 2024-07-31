@@ -3,9 +3,10 @@ import { config } from './config.js'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
 
+
 export async function initConfigOrExit(
   ...args: Parameters<typeof config.init>
-) {
+): Promise<{ parsed: any; config: typeof config }> {
   const init = await config.init(...args)
   if (init.ok === true) {
     return { parsed: init.value, config }

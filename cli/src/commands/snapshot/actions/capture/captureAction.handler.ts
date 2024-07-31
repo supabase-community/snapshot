@@ -18,7 +18,6 @@ import fs from 'fs-extra'
 
 import { needs } from '~/components/needs/index.js'
 import { exitWithError } from '~/lib/exit.js'
-import { SnapshotProgress } from '~/lib/updateExecTaskProgress.js'
 
 import { CommandOptions } from './captureAction.types.js'
 import { addCaptureErrorContext } from './lib/addCaptureErrorContext.js'
@@ -34,6 +33,7 @@ import { CopyTablesEvent } from './lib/subsetV3/steps/emitterToOnUpdate.js'
 import { SnapshotTable } from '@snaplet/sdk/cli'
 import { writeSnapshotStructure } from '~/components/readConfig.js'
 import { initConfigOrExit } from '~/lib/initConfigOrExit.js'
+import { SnapshotProgress } from './lib/subsetV3/steps/events.js'
 
 async function resilientUpdateSnapshotProgress(progress: SnapshotProgress) {
   if (progress.step === 'data' && progress.metadata) {

@@ -8,9 +8,8 @@ import {
 } from '@snaplet/sdk/cli'
 import { display } from '~/lib/display.js'
 import { config } from '~/lib/config.js'
-import { fetchShapePredictions } from '~/commands/generate/lib/fetchShapePredictions.js'
 import { getAliasedDataModel } from './getAliasedDataModel.js'
-import { fetchShapeExamples } from '~/commands/generate/lib/fetchShapeExamples.js'
+
 
 export async function createGenerateClientContext(
   sourceDatabaseUrl: string,
@@ -54,10 +53,6 @@ For the best AI-enhanced data generation experience, create a free Snaplet accou
 Snaplet uses details about your database to improve our generation results.`)
   }
 
-  if (isLoggedIn) {
-    shapePredictions = await fetchShapePredictions(dataModel)
-    shapeExamples = await fetchShapeExamples(shapePredictions)
-  }
 
   return {
     dataModel,

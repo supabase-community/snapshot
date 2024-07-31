@@ -4,10 +4,8 @@ import './bootstrap.js'
 import { catchAllCommand } from './commands/catchAll/catchAllCommand.js'
 import { configCommand } from './commands/config/configCommand.js'
 import { debugCommand } from './commands/debug/debugCommand.js'
-import { devCommand } from './commands/dev/devCommand.js'
 import { discordCommand } from './commands/discord/discordCommand.js'
 import { docsCommand } from './commands/docs/docsCommand.js'
-import { postInstallCommand } from './commands/postInstall/postInstallCommand.js'
 import { snapshotCommand } from './commands/snapshot/snapshotCommand.js'
 import { upgradeCommand } from './commands/upgrade/upgradeCommand.js'
 import { setupCommand } from "./commands/setup/setupCommand.js"
@@ -41,21 +39,17 @@ const cli = yargs
     async (args: ArgumentsCamelCase) =>
       (await import('./middlewares/index.js')).removePgEnvarMiddleware(args),
     async (args: ArgumentsCamelCase) =>
-      (await import('./middlewares/index.js')).setupSentryMiddleware(args),
-    async (args: ArgumentsCamelCase) =>
       (await import('./middlewares/index.js')).runAllMigrationsMiddleware(args),
   ])
   .usage('snaplet <command> <subcommand> [flags]')
   .command(configCommand)
   .command(debugCommand)
-  .command(devCommand)
   .command(discordCommand)
   .command(docsCommand)
   .command(snapshotCommand)
   .command(upgradeCommand)
   .command(catchAllCommand)
   .command(setupCommand)
-  .command(postInstallCommand)
   .completion('completion')
   .version(
     process.env.SNAPLET_CLI_VERSION ?? require('../package.json').version

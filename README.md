@@ -103,3 +103,66 @@ Follow these steps to use the debugger in VSCode:
 # Monorepo remaining tasks
 - [ ] Solid ESBuild configuration (mostly autofixable)
 - [ ] Usage of imports map instead of TypeScript paths aliases
+
+
+# Contribution
+
+## Setup
+
+First, you'll need PostgreSQL and brotli installed and running on your machine. If you're using OSX and homebrew:
+
+```terminal
+brew install postgresql@15
+brew services start postgresql@15
+brew install libpq
+brew install brotli
+
+# if you do not yet have a `postgres` role with these role attributes
+psql postgres -c 'create role postgres WITH SUPERUSER CREATEDB CREATEROLE LOGIN'
+```
+Make sure you have Node.js 20 or above installed:
+```
+node --version
+v20.15.1
+```
+
+Make sure you have `yarn` version above 3.5.0 installed, on MacOS `yarn` comes with `corepack`:
+```
+corepack enable
+yarn --version
+3.5.0
+```
+
+In root directory run:
+```
+yarn install
+yarn build
+```
+
+## Test cli
+
+Create new directory and setup database:
+```
+mkdir test
+cd test
+node ../cli/dist/index.js setup
+```
+
+Capture a new snapshot:
+```
+SNAPLET_SOURCE_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres node ../cli/dist/index.js ss capture
+```
+
+List snapshots:
+```
+node ../cli/dist/index.js ss ls
+NAME                          STATUS     CREATED     SIZE       TAGS    SRC
+ss-fluffy-microwave-143354    SUCCESS    just now    15.3 MB            💻
+
+Found 1 snapshot
+```
+
+Restore to another database:
+```
+SNAPLET_TARGET_DATABASE_URL=postgresql://postgres:postgres@localhost:54322/copy node ../cli/dist/index.js ss restore
+```
