@@ -141,7 +141,7 @@ yarn build
 
 ## Test cli
 
-Create new directory and setup database:
+Create new directory and setup database (Usually local development database):
 ```
 mkdir test
 cd test
@@ -150,7 +150,7 @@ node ../cli/dist/index.js setup
 
 Capture a new snapshot:
 ```
-SNAPLET_SOURCE_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres node ../cli/dist/index.js ss capture
+SNAPLET_SOURCE_DATABASE_URL=postgresql://USER:PASSWORD@REMOTE_DB_HOST:PORT/DB_NAME node ../cli/dist/index.js ss capture
 ```
 
 List snapshots:
@@ -162,7 +162,7 @@ ss-fluffy-microwave-143354    SUCCESS    just now    15.3 MB            💻
 Found 1 snapshot
 ```
 
-Restore to another database:
+Restore to your source database (Specified during `setup`):
 ```
-SNAPLET_TARGET_DATABASE_URL=postgresql://postgres:postgres@localhost:54322/copy node ../cli/dist/index.js ss restore
+node ../cli/dist/index.js ss restore
 ```
