@@ -7,5 +7,5 @@ export const handler = async () => {
   await inputTargetDatabaseCloudUrl()
 
   const paths = await needs.projectPathsV2()
-  console.log(`Generated config: ${c.bold(paths.snapletConfig)}`)
+  console.log(`Generated config: ${c.bold(paths.config)}`)
 }
