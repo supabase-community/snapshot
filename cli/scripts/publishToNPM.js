@@ -21,12 +21,12 @@ async function publishToNPM() {
   })
 
   console.log('Publishing to NPM...')
-
+  console.log('Assets:', assets.map((a) => a.name).join(', '))
   let hasErrored = false
 
   for (const asset of assets) {
     try {
-      await execa(
+      const res = await execa(
         'npm',
         ['publish', '--access=public', path.join(dir, asset.name)],
         {
@@ -34,6 +34,7 @@ async function publishToNPM() {
           cwd: dir,
         }
       )
+      console.log(res.stdout)
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
