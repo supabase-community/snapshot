@@ -51,11 +51,11 @@
   "license": "FSL-1.1-MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "name": "snaplet",
+  "name": "@snaplet/snapshot",
   "scripts": {
     "prepareRelease": "./scripts/tasks.mjs prepareRelease",
     "build": "./scripts/tasks.mjs build"
   },
   "types": "./dist/index.d.ts",
-  "version": "0.41.2"
+  "version": "0.42.0"
 }

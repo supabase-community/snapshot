@@ -26,10 +26,8 @@ beforeEach(() => {
 describe('project config', () => {
   test('parses a config correctly', () => {
     const x = parseProjectConfig({
-      projectId: '1',
       targetDatabaseUrl: 'pg://postgres:postgres@localhost:5432/postgres',
     })
-    expect(x.projectId).toEqual('1')
     expect(x.targetDatabaseUrl).toEqual(
       'pg://postgres:postgres@localhost:5432/postgres'
     )
@@ -39,10 +37,8 @@ describe('project config', () => {
     process.env.SNAPLET_PROJECT_ID = '2'
     process.env.SNAPLET_TARGET_DATABASE_URL = 'pg://localhost:5432/one'
     const x = parseProjectConfig({
-      projectId: '1',
       targetDatabaseUrl: 'pg://localhost:5432/three',
     })
-    expect(x.projectId).toEqual('2')
     expect(x.targetDatabaseUrl).toEqual('pg://localhost:5432/one')
   })
 
@@ -50,7 +46,7 @@ describe('project config', () => {
     process.env.SNAPLET_PROJECT_ID = '1'
     process.env.SNAPLET_TARGET_DATABASE_URL = 'pg://localhost:5432/two'
     const x = await getProjectConfigAsync('/dev/null/config.json')
-    expect(x.projectId).toEqual('1')
+    expect(x.targetDatabaseUrl).toEqual('pg://localhost:5432/two')
   })
 
   test('handles parsing errors gracefully', async () => {
@@ -66,7 +62,7 @@ describe('project config', () => {
       os.tmpdir(),
       '.snaplet/config.json'
     )
-    saveProjectConfig({ projectId: 'my-database-id' }, snapletProjectConfigPath)
+    saveProjectConfig({ targetDatabaseUrl: 'pg://localhost:5432/db' }, snapletProjectConfigPath)
     expect(fs.existsSync(snapletProjectConfigPath)).toBe(true)
   })
 
@@ -77,7 +73,7 @@ describe('project config', () => {
     )
     const y = await getProjectConfigAsync(x)
 
-    expect(y.projectId).toEqual('qwerty123')
+    expect(y.targetDatabaseUrl).toEqual('pg://localhost:5432/two')
   })
 
   test('Allow overrides for non-existent configs', async () => {
@@ -93,6 +89,6 @@ describe('project config', () => {
       'project/valid/.snaplet/config.json'
     )
 
-    expect((await getProjectConfigAsync(x)).projectId).toEqual('qwerty123')
+    expect((await getProjectConfigAsync(x)).targetDatabaseUrl).toEqual('pg://localhost:5432/two')
   })
 })

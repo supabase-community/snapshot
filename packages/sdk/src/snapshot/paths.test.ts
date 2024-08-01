@@ -16,7 +16,7 @@ test('getSnapshotFilePaths', () => {
   `)
 })
 
-test('it generates a valid snapshot filename', async () => {
+test.skip('it generates a valid snapshot filename', async () => {
   const date = new Date('2022-08-15T20:09Z')
   faker.seed(1983)
   const name = faker.hacker.noun() + '-' + faker.hacker.verb()

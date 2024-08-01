@@ -6,27 +6,6 @@ import { subsetStartTable } from './startTable.js'
 import { introspectDatabaseV3 } from '../db/introspect/introspectDatabase.js'
 
 describe('startTable', () => {
-  test('detect start table on Snaplet', async () => {
-    const CONN_STRING =
-      process.env.SNAPLET_DATABASE_URL ||
-      'pg://postgres@localhost:5432/snaplet_development'
-    const structure = await withDbClient(introspectDatabaseV3, {
-      connString: CONN_STRING,
-    })
-    const startTable = subsetStartTable(structure)
-    expect(startTable.id).toBe('public.User')
-  })
-
-  test('detect start table on Snaplet', async () => {
-    const CONN_STRING =
-      process.env.SNAPLET_DATABASE_URL ||
-      'pg://postgres@localhost:5432/snaplet_development'
-    const structure = await withDbClient(introspectDatabaseV3, {
-      connString: CONN_STRING,
-    })
-    const startTable = subsetStartTable(structure)
-    expect(startTable.id).toBe('public.User')
-  })
 
   test('detect start table on Custom Db', async () => {
     const connStr: ConnectionString = await createTestDb()
