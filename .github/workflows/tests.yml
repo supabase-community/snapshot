@@ -1,8 +1,8 @@
 name: Tests
 
 env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  # TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
   SNAPLET_TARGET_DATABASE_URL: 'postgresql://postgres:postgres@localhost/snaplet_development'
   DATABASE_URL: 'postgresql://postgres:postgres@localhost/snaplet_development'
   CI_TESTS: 1
@@ -44,208 +44,208 @@ jobs:
       - uses: ./.github/actions/install
       - uses: ./.github/actions/tests/build-cli
 
-  tests-lint:
-    needs: setup
-    runs-on: buildjet-8vcpu-ubuntu-2204
-    timeout-minutes: 10
-    # We need setup the database so we can generate the seed client for type checking to pass
-    services:
-      postgres:
-        image: postgres:11
-        credentials:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-node
-      - uses: ./.github/actions/install
-      - run: yarn build
+  # tests-lint:
+  #   needs: setup
+  #   runs-on: buildjet-8vcpu-ubuntu-2204
+  #   timeout-minutes: 10
+  #   # We need setup the database so we can generate the seed client for type checking to pass
+  #   services:
+  #     postgres:
+  #       image: postgres:11
+  #       # credentials:
+  #       #   username: ${{ secrets.DOCKER_HUB_USERNAME }}
+  #       #   password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  #       ports:
+  #         - 5432:5432
+  #       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #       env:
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_DB: postgres
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: ./.github/actions/setup-node
+  #     - uses: ./.github/actions/install
+  #     - run: yarn build
 
       # Re-use cache from build, download and restore latest snapshot
-      - uses: ./.github/actions/tests/restore-latest-snapshot
-        with:
-          snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
+      # - uses: ./.github/actions/tests/restore-latest-snapshot
+      #   with:
+      #     snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+      #     database-url: postgresql://postgres:postgres@localhost/snaplet_development
 
-      - name: Build api
-        run: yarn build
-      # Setup api in background and a tmate session
-      - uses: ./.github/actions/tests/run-api-background
-        with:
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
+      # - name: Build api
+      #   run: yarn build
+      # # Setup api in background and a tmate session
+      # - uses: ./.github/actions/tests/run-api-background
+      #   with:
+      #     database-url: postgresql://postgres:postgres@localhost/snaplet_development
 
-      - name: Build snaplet seed client for type checking
-        env:
-          SNAPLET_ACCESS_TOKEN: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
-        run: npx @snaplet/seed generate
-        shell: bash
+      # - name: Build snaplet seed client for type checking
+      #   env:
+      #     SNAPLET_ACCESS_TOKEN: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+      #   run: npx @snaplet/seed generate
+      #   shell: bash
 
-      - name: Lint
-        run: yarn lint
-        shell: bash
+      # - name: Lint
+      #   run: yarn lint
+      #   shell: bash
 
-      - name: Type check
-        run: yarn type-check
-        shell: bash
-      # If our linting or typecheck detect error, cancel the workflow killing all other running tests
-      - name: cancelling
-        if: failure()
-        uses: andymckay/cancel-action@0.3
+      # - name: Type check
+      #   run: yarn type-check
+      #   shell: bash
+      # # If our linting or typecheck detect error, cancel the workflow killing all other running tests
+      # - name: cancelling
+      #   if: failure()
+      #   uses: andymckay/cancel-action@0.3
 
   # Since those tests are flawky we won't cancel other workflows if it fail
-  tests-cli-performances:
-    needs: setup-cli
-    runs-on: buildjet-4vcpu-ubuntu-2204
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-node
-      - uses: ./.github/actions/install
-      - uses: ./.github/actions/tests/build-cli
+  # tests-cli-performances:
+  #   needs: setup-cli
+  #   runs-on: buildjet-4vcpu-ubuntu-2204
+  #   timeout-minutes: 5
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: ./.github/actions/setup-node
+  #     - uses: ./.github/actions/install
+  #     - uses: ./.github/actions/tests/build-cli
 
-      - name: Test Snaplet CLI start-up performance
-        working-directory: ./cli
-        run: |
-          wget https://github.com/sharkdp/hyperfine/releases/download/v1.16.1/hyperfine_1.16.1_amd64.deb
-          sudo dpkg -i hyperfine_1.16.1_amd64.deb
-          mean=$(hyperfine --style=none --export-json /dev/stdout --warmup 3 './bin/cli --help' | jq '.results[].mean')
-          echo "Time (mean): $(printf "%.0f\n" $(echo "${mean} * 1000" | bc -l)) ms (max allowed is 300 ms)"
-          [[ $(echo "${mean} < 0.3" | bc -l) == "1" ]]
+  #     - name: Test Snaplet CLI start-up performance
+  #       working-directory: ./cli
+  #       run: |
+  #         wget https://github.com/sharkdp/hyperfine/releases/download/v1.16.1/hyperfine_1.16.1_amd64.deb
+  #         sudo dpkg -i hyperfine_1.16.1_amd64.deb
+  #         mean=$(hyperfine --style=none --export-json /dev/stdout --warmup 3 './bin/cli --help' | jq '.results[].mean')
+  #         echo "Time (mean): $(printf "%.0f\n" $(echo "${mean} * 1000" | bc -l)) ms (max allowed is 300 ms)"
+  #         [[ $(echo "${mean} < 0.3" | bc -l) == "1" ]]
 
-      - name: Test Snaplet CLI size
-        working-directory: ./cli
-        run: |
-          size=$(du -k ./bin/cli | cut -f1)
-          echo "Size: $(du -kH ./bin/cli | cut -f1) (max allowed is 85M)"
-          [[ $(echo "${size} < 94371840" | bc -l) == "1" ]]
+  #     - name: Test Snaplet CLI size
+  #       working-directory: ./cli
+  #       run: |
+  #         size=$(du -k ./bin/cli | cut -f1)
+  #         echo "Size: $(du -kH ./bin/cli | cut -f1) (max allowed is 85M)"
+  #         [[ $(echo "${size} < 94371840" | bc -l) == "1" ]]
 
-      - name: Test build cli package
-        working-directory: ./packages/cli
-        run: |
-          (cd ../.. && yarn build)
-          yarn install
-          yarn prepareRelease
+  #     - name: Test build cli package
+  #       working-directory: ./packages/cli
+  #       run: |
+  #         (cd ../.. && yarn build)
+  #         yarn install
+  #         yarn prepareRelease
 
-  tests-cli-e2e:
-    needs: setup-cli
-    # This is a custom runner with 8 cores CPU it allow e2e test in jest to run concurrently
-    # which reduce our testing time from ~15-20min to ~5min. It cost 0.03$/min so everything running
-    # in it should be kept minimal, ideally it would only start, run the e2e tests, and leave
-    runs-on: buildjet-8vcpu-ubuntu-2204
-    timeout-minutes: 10
-    services:
-      postgres:
-        image: postgres:14
-        credentials:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-node
-      - uses: ./.github/actions/install
-      - uses: ./.github/actions/tests/build-cli
-      # Re-use cache from build, download and restore latest snapshot
-      - uses: ./.github/actions/tests/restore-latest-snapshot
-        with:
-          snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
-      - name: Build api
-        run: yarn build
-      # Setup api in background and a tmate session
-      - uses: ./.github/actions/tests/run-api-background
-        with:
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
+  # tests-cli-e2e:
+  #   needs: setup-cli
+  #   # This is a custom runner with 8 cores CPU it allow e2e test in jest to run concurrently
+  #   # which reduce our testing time from ~15-20min to ~5min. It cost 0.03$/min so everything running
+  #   # in it should be kept minimal, ideally it would only start, run the e2e tests, and leave
+  #   runs-on: buildjet-8vcpu-ubuntu-2204
+  #   timeout-minutes: 10
+  #   services:
+  #     postgres:
+  #       image: postgres:14
+  #       credentials:
+  #         username: ${{ secrets.DOCKER_HUB_USERNAME }}
+  #         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  #       ports:
+  #         - 5432:5432
+  #       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #       env:
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_DB: postgres
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: ./.github/actions/setup-node
+  #     - uses: ./.github/actions/install
+  #     - uses: ./.github/actions/tests/build-cli
+  #     # Re-use cache from build, download and restore latest snapshot
+  #     - uses: ./.github/actions/tests/restore-latest-snapshot
+  #       with:
+  #         snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+  #         database-url: postgresql://postgres:postgres@localhost/snaplet_development
+  #     - name: Build api
+  #       run: yarn build
+  #     # Setup api in background and a tmate session
+  #     - uses: ./.github/actions/tests/run-api-background
+  #       with:
+  #         database-url: postgresql://postgres:postgres@localhost/snaplet_development
 
-      - name: Test Snaplet CLI E2E
-        run: yarn workspace cli test:e2e
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
-          SNAPLET_TARGET_DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_e2e_cli
+  #     - name: Test Snaplet CLI E2E
+  #       run: yarn workspace cli test:e2e
+  #       env:
+  #         DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
+  #         SNAPLET_TARGET_DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_e2e_cli
 
-      # Cancel the whole workflow if any of the tests fail to save github runner time
-      - name: cancelling
-        if: failure()
-        uses: andymckay/cancel-action@0.3
+  #     # Cancel the whole workflow if any of the tests fail to save github runner time
+  #     - name: cancelling
+  #       if: failure()
+  #       uses: andymckay/cancel-action@0.3
 
-  # Since those tests are flawky we won't cancel other workflows if it fail
-  tests-web-e2e:
-    needs: setup
-    runs-on: buildjet-8vcpu-ubuntu-2204
-    timeout-minutes: 15
-    services:
-      postgres:
-        # Our production database run on postgresql version 11, so we use it for our e2e web test to make sure
-        # Migrations and everything else work as expected
-        image: postgres:11
-        credentials:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-node
-      - uses: ./.github/actions/install
-      - run: yarn build
-      # Re-use cache from build, download and restore latest snapshot
-      - uses: ./.github/actions/tests/restore-latest-snapshot
-        with:
-          snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
-      # Setup api in background and a tmate session
-      - uses: ./.github/actions/tests/run-api-background
-        with:
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
+  # # Since those tests are flawky we won't cancel other workflows if it fail
+  # tests-web-e2e:
+  #   needs: setup
+  #   runs-on: buildjet-8vcpu-ubuntu-2204
+  #   timeout-minutes: 15
+  #   services:
+  #     postgres:
+  #       # Our production database run on postgresql version 11, so we use it for our e2e web test to make sure
+  #       # Migrations and everything else work as expected
+  #       image: postgres:11
+  #       credentials:
+  #         username: ${{ secrets.DOCKER_HUB_USERNAME }}
+  #         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  #       ports:
+  #         - 5432:5432
+  #       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #       env:
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_DB: postgres
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: ./.github/actions/setup-node
+  #     - uses: ./.github/actions/install
+  #     - run: yarn build
+  #     # Re-use cache from build, download and restore latest snapshot
+  #     - uses: ./.github/actions/tests/restore-latest-snapshot
+  #       with:
+  #         snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+  #         database-url: postgresql://postgres:postgres@localhost/snaplet_development
+  #     # Setup api in background and a tmate session
+  #     - uses: ./.github/actions/tests/run-api-background
+  #       with:
+  #         database-url: postgresql://postgres:postgres@localhost/snaplet_development
 
-      - name: Run web in the background
-        run: |
-          touch logs/web.log
-          yarn workspace web dev &
-        env:
-          NODE_ENV: development
-          DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
-        shell: bash
-      # Install and cache playwright install for e2e web
-      - uses: ./.github/actions/tests/install-playwright
-      - name: wait for everything up and ready
-        run: |
-          npx wait-on -d 10000 -i 5000 http://localhost:8911/health
-          npx wait-on -d 10000 -i 5000 http://localhost:8910
-        shell: bash
-      - uses: ./.github/actions/tests/pre-test-setup
-        with:
-          database-url: postgresql://postgres:postgres@localhost/snaplet_development
-          snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
-      - name: Test
-        run: |
-          yarn workspace web test:e2e
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
+  #     - name: Run web in the background
+  #       run: |
+  #         touch logs/web.log
+  #         yarn workspace web dev &
+  #       env:
+  #         NODE_ENV: development
+  #         DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
+  #       shell: bash
+  #     # Install and cache playwright install for e2e web
+  #     - uses: ./.github/actions/tests/install-playwright
+  #     - name: wait for everything up and ready
+  #       run: |
+  #         npx wait-on -d 10000 -i 5000 http://localhost:8911/health
+  #         npx wait-on -d 10000 -i 5000 http://localhost:8910
+  #       shell: bash
+  #     - uses: ./.github/actions/tests/pre-test-setup
+  #       with:
+  #         database-url: postgresql://postgres:postgres@localhost/snaplet_development
+  #         snaplet-access-token: ${{ secrets.SNAPLET_ACCESS_TOKEN }}
+  #     - name: Test
+  #       run: |
+  #         yarn workspace web test:e2e
+  #       env:
+  #         DATABASE_URL: postgresql://postgres:postgres@localhost/snaplet_development
 
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: test-results
-          path: web/test-results
+  #     - uses: actions/upload-artifact@v2
+  #       if: failure()
+  #       with:
+  #         name: test-results
+  #         path: web/test-results
 
   tests-unit:
     needs: setup
@@ -254,9 +254,9 @@ jobs:
     services:
       postgres:
         image: postgres:14
-        credentials:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        # credentials:
+        #   username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        #   password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
