@@ -44,16 +44,16 @@ jobs:
           ./scripts/publishToNPM.js || true
 
 
-      - name: Upgrade local snaplet dep
-        working-directory: ./cli
-        run: |
-          ../scripts/upgradeSnapletDep.js || true
+      # - name: Upgrade local snaplet dep
+      #   working-directory: ./cli
+      #   run: |
+      #     ../scripts/upgradeSnapletDep.js || true
 
-      - name: Commit and push cli npm package changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(dev): Updates after releasing snaplet npm package"
-          branch: main
+      # - name: Commit and push cli npm package changes
+      #   uses: stefanzweifel/git-auto-commit-action@v5
+      #   with:
+      #     commit_message: "chore(dev): Updates after releasing snaplet npm package"
+      #     branch: main
 
       #  after each release we want to trigger an api deploy to be sure they're in sync
       # - name: Release API and WEB
