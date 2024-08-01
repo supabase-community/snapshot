@@ -262,6 +262,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@snaplet/snapshot@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@snaplet/snapshot@workspace:."
+  dependencies:
+    "@tsconfig/strictest": 2.0.0
+    esbuild-plugin-replace: 1.4.0
+    tsup: 6.7.0
+  bin:
+    snapshot: ./bin/snaplet.js
+  languageName: unknown
+  linkType: soft
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -1592,18 +1604,6 @@ __metadata:
   checksum: b5167a7142c1da704c0e3af85c402002b597081dd9575031a90b4f229ca5678e9a36e8a374f1814c8156a725d17008ae3bde63b92f9cfd132526379e580bec8b
   languageName: node
   linkType: hard
-
-"snaplet@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "snaplet@workspace:."
-  dependencies:
-    "@tsconfig/strictest": 2.0.0
-    esbuild-plugin-replace: 1.4.0
-    tsup: 6.7.0
-  bin:
-    snaplet: ./bin/snaplet.js
-  languageName: unknown
-  linkType: soft
 
 "socks-proxy-agent@npm:^7.0.0":
   version: 7.0.0
