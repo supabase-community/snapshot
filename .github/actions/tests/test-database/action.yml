@@ -1,0 +1,11 @@
+name: Create test database
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create database
+      env:
+        PGPASSWORD: postgres
+      run: |
+        psql -U postgres -h localhost -c "CREATE DATABASE snaplet_development;"
+      shell: bash
