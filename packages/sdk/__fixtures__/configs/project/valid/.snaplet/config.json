@@ -1,3 +1,3 @@
 {
-  "projectId": "qwerty123"
+  "targetDatabaseUrl": "pg://localhost:5432/two"
 }

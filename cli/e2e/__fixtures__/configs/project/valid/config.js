@@ -1,5 +1,5 @@
 const x = {
-  projectId: '123',
+  targetDatabaseUrl: "pg://localhost:5432/two"
 }
 
 module.exports = x
