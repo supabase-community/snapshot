@@ -18,8 +18,8 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT_COMMIT }}
+        # with:
+        #   token: ${{ secrets.GH_PAT_COMMIT }}
 
       - uses: ./.github/actions/setup-node
       - name: Install node_modules
