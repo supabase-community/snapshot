@@ -27,12 +27,12 @@ jobs:
         with:
           fail-on-cache-miss: false
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+      #     aws-region: eu-central-1
 
       - name: Upload and release CLI
         working-directory: ./cli
@@ -60,11 +60,11 @@ jobs:
           branch: main
 
       #  after each release we want to trigger an api deploy to be sure they're in sync
-      - name: Release API and WEB
-        env:
-          ADMIN_ACCESS_TOKEN: ${{ secrets.ADMIN_ACCESS_TOKEN }}
-        run: |
-          curl -v -XPOST \
-            -H 'authorization: Bearer '"$ADMIN_ACCESS_TOKEN"'' \
-            -H "Content-type: application/json" \
-            'https://api.snaplet.dev/admin/deployHook' &
+      # - name: Release API and WEB
+      #   env:
+      #     ADMIN_ACCESS_TOKEN: ${{ secrets.ADMIN_ACCESS_TOKEN }}
+      #   run: |
+      #     curl -v -XPOST \
+      #       -H 'authorization: Bearer '"$ADMIN_ACCESS_TOKEN"'' \
+      #       -H "Content-type: application/json" \
+      #       'https://api.snaplet.dev/admin/deployHook' &
