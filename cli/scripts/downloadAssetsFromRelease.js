@@ -20,7 +20,7 @@ exports.downloadAssetsFromRelease = async function downloadAssetsFromRelease({
   } catch (_) {}
 
   const { data: releases } = await axios.get(
-    `https://api.github.com/repos/snaplet/snaplet/releases`,
+    `https://api.github.com/repos/snaplet/snapshot/releases`,
     {
       headers: {
         Authorization: `token ${process.env.GITHUB_TOKEN}`,
