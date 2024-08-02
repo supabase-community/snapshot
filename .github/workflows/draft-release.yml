@@ -48,23 +48,10 @@ jobs:
     strategy:
       matrix:
         data: [
-          # {
-          #   os: "buildjet-4vcpu-ubuntu-2204-arm",
-          #   filename: "snaplet-linux-arm64-${{ needs.draft-release.outputs.version }}",
-          # },
           {
             os: "buildjet-4vcpu-ubuntu-2204",
-            filename: "snaplet-linux-x64-${{ needs.draft-release.outputs.version }}",
             npmFilename: "snaplet-npm-${{ needs.draft-release.outputs.version }}.tgz"
           },
-          # {
-          #   os: "windows-latest",
-          #   filename: "snaplet-win-x64-${{ needs.draft-release.outputs.version }}.exe",
-          # },
-          # {
-          #   os: "macos-13",
-          #   filename: "snaplet-macos-x64-${{ needs.draft-release.outputs.version }}",
-          # }
         ]
     runs-on: ${{ matrix.data.os }}
     steps:
@@ -73,7 +60,7 @@ jobs:
       - run: yarn install
 
       - name: Build CLI
-        run: yarn build:binary --force --filter='!@snaplet/seed'
+        run: yarn build:binary --force
         shell: bash
 
       - name: Prepare CLI npm package
@@ -83,23 +70,6 @@ jobs:
           yarn install
           yarn prepareRelease ${{ matrix.data.npmFilename }}
         shell: bash
-
-      - run: mv ./cli/bin/cli${{ matrix.data.os == 'windows-latest' && '.exe' || '' }} ./cli/bin/${{ matrix.data.filename }}
-
-      - name: Is CLI runnable?
-        run: |
-          ./cli/bin/${{ matrix.data.filename }} --version
-          if ! ./cli/bin/${{ matrix.data.filename }} --help | grep -q snaplet; then exit 1; fi
-        shell: bash
-
-      - name: Upload CLI
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          draft: true
-          files:
-            ./cli/bin/${{ matrix.data.filename }}
 
       - name: Upload CLI npm package
         uses: softprops/action-gh-release@v1

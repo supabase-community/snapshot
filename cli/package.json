@@ -1,7 +1,7 @@
 {
   "name": "cli",
   "description": "Snaplet",
-  "version": "0.93.1",
+  "version": "0.93.2",
   "license": "FSL-1.1-MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
