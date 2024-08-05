@@ -1,0 +1,184 @@
+import { Step } from '../../../components/Step'
+import { Callout, Steps } from "nextra/components"
+import { Tabs, Tab } from "nextra/components";
+
+# Snapshot Quick Start Guide
+
+## Assumptions
+This guide assumes you have access to a database that has production data, or production-like data you can connect to.
+
+If you're just looking to demo Snaplet's snapshot feature, you can also use a Snaplet demo database as part of this guide.
+
+<Callout emoji="🤖">
+If you don't have access to a database with production data, and would prefer to seed production-like using Snaplet's AI `seed` feature, you should instead follow the [Seed Quick Start](/seed/getting-started/quick-start) guide.
+</Callout>
+
+
+
+## Getting Started
+**In this tutorial, we'll guide you through the process of:**
+* Capturing your first snapshot with Snaplet.
+* Installing the Snaplet CLI.
+* Restoring that snapshot to your development environment.
+
+Let's get started.
+
+## Sign up for Snaplet and Capture a Snapshot
+You'll need a free Snaplet account to capture a snapshot of your database.
+
+<Steps>
+
+### Sign up for Snaplet
+<Step image={{ src: "/getting-started/quick-start/quick-start-01.png", alt: "sign up for snaplet"}}>
+First off, you'll need a free Snaplet account. Sign up to [Snaplet Cloud](https://app.snaplet.dev).
+</Step>
+
+### Follow the Snapshot workflow
+<Step image={{ src: "/getting-started/quick-start/quick-start-01-5.png", alt: "select snapshot"}}>
+Snaplet allows you to seed production-like data using the [`seed`]((/seed/getting-started/quick-start)) feature, or create a snapshot from an existing production database. 
+
+We'll be doing the later, so select **'Continue'** to proceed with creating a snapshot. 
+</Step>
+
+### Start the Snaplet Onboarding
+<Step image={{ src: "/getting-started/quick-start/quick-start-02.png", alt: "start the onboarding"}}>
+You'll see a short overview of what the snapshot capture process entails. Click '**Let's go**'.
+</Step>
+
+### Select a Source Database
+<Step image={{ src: "/getting-started/quick-start/quick-start-03.png", alt: "select a source database"}}>
+The first step is to choose the **source database** you're going to connect to Snaplet. The source database is typically your production database. Click '**Provide my own db**'.
+
+*If you're uncomfortable connecting to your actual production database, use your staging or QA database, or the Snaplet demo database. Supabase users should select the Supabase option and follow the [Supabase tutorial](/snapshot/recipes/supabase) for assistance.*
+
+{/* *No database? Use Snaplet's `seed` feature to create fake production-like data. Follow the [seed quick start guide](/getting-started/quick-start/seed) instead of this guide.* */}
+</Step>
+
+### Provide source database credentials
+<Step image={{ src: "/getting-started/quick-start/quick-start-04.png", alt: "input connection information"}}>
+You'll need to provide your source database connection details. You can either do so individually for each of the values, or import a connection string.
+
+Once done, click '**Test my connection**' to verify that Snaplet is able to connect to your database, and proceed. If you see a warning about read-only access to your database, make sure you're using [read-only role](/snapshot/guides/postgresql/#create-a-read-only-role) credentials for Snaplet.
+
+If you're having trouble getting your database connection string to work, refer to our [connection string reference](/reference/connection-strings). Prisma also has a [reference guide](https://www.prisma.io/dataguide/postgresql/short-guides/connection-uris) on URI encoding that may be useful.
+</Step>
+
+### Subset your database
+<Step image={{ src: "/getting-started/quick-start/quick-start-05.png", alt: "subsetting"}}>
+You will now be prompted to create a subset of your source database.
+
+Subsetting is great for reducing the size of larger databases to a more managable size.
+
+Select the starting table for your subset (typically your "primary" table, like users or customers) and select how many rows of data you'd like.
+
+You can also opt not to subset at all by selecting '**All rows**'. Select any option to proceed.
+</Step>
+
+### Transform your data
+<Step image={{ src: "/getting-started/quick-start/quick-start-06.png", alt: "transform your data"}}>
+You can now transform the data from your source database.
+
+Snaplet's transform process can scramble all data from your source database, while retaining the overall "shape" of that data, in essence removing any personally-identifiable data.
+
+You can also not to transform the data. Select either option to proceed.
+
+</Step>
+
+### Snapshot capture
+<Step image={{ src: "/getting-started/quick-start/quick-start-07.png", alt: "snapshot capture"}}>
+Snaplet's workers will now connect to your source database, copy the contents, and depending on what you've selected, subset and transform the data. The output of this process is a **database snapshot**, which you can then restore into your development environment to code against.
+</Step>
+
+### Snapshot complete
+<Step image={{ src: "/getting-started/quick-start/quick-start-10.png", alt: "snapshot capture complete"}}>
+The snapshot capture process should finish within a few minutes for all but the biggest databases. Once it's done, you'll see a message confirming its succesful capture. 
+
+At this point, you have a database snapshot, and will need to restore this snapshot into your development environment or workflow to use it further. You can do this by installing and setting up the Snaplet CLI, and running the command to restore a snapshot.   
+</Step>
+
+</Steps>
+---
+
+## Snaplet CLI Installation 
+
+You'll recall that a snapshot is not a database, it's a subset, transformed copy of that database. In order to code against it, your snapshot needs to be restored into a database, like your local development database. 
+
+To do so, you'll need to install the Snaplet CLI and setup your Snaplet instance. Once done, you'll be able to restore your snapshot from the CLI.
+
+Start by installing the Snaplet CLI.
+
+<Tabs items={["npm", "pnpm", "yarn", "curl"]}>
+  <Tab>
+  ```bash >_&nbsp;terminal
+  # Install and setup Snaplet with npx
+  npx snaplet setup
+  ```
+  </Tab>
+  <Tab>
+  ```bash >_&nbsp;terminal
+  # Install and setup Snaplet with pnpm
+  pnpm dlx snaplet setup
+  ```
+  </Tab>
+  <Tab>
+  ```bash >_&nbsp;terminal
+  # Install and setup Snaplet with yarn
+  yarn dlx snaplet setup
+  ```
+  </Tab>
+  <Tab>
+  ```bash >_&nbsp;terminal
+  # Install and setup Snaplet as a static binary
+  curl -sL https://app.snaplet.dev/get-cli/ | bash
+  snaplet setup
+  ```
+  </Tab>
+</Tabs>
+
+<Steps>
+
+### Install the Snaplet CLI
+<Step image={{ src: "/getting-started/quick-start/quick-start-12.png", alt: "Install the Snaplet CLI with NPX"}}>
+Use your preferred installer to install and setup Snaplet. We're using `npx snaplet setup` here. When prompted, select **'y'** to proceed.  
+</Step>
+
+### Follow the snapshot journey
+<Step image={{ src: "/getting-started/quick-start/quick-start-13.png", alt: "Opt to use snapshots"}}>
+Just like the Snaplet Cloud experience, select the option to use production data as your data source. 
+</Step>
+
+### Specify your target database
+<Step image={{ src: "/getting-started/quick-start/quick-start-14.png", alt: "Provide your target database connection string"}}>
+Provide the [connection string](/reference/connection-strings) for your target database, typically your local development environment database, but it could be any database you want to code against. This is where the snapshot will be restored to, overwriting all data in the database and replacing it with the snapshot data.
+</Step>
+
+### Link your Snaplet Cloud project 
+<Step image={{ src: "/getting-started/quick-start/quick-start-17.png", alt: "Link a Snaplet Cloud project"}}>
+You'll be prompted whether you want to link a project from Snaplet Cloud - select **yes**, and select the project you created earlier as part of this quick start guide.
+</Step>
+
+### Restore your snapshot
+<Step image={{ src: "/getting-started/quick-start/quick-start-15.png", alt: "Restore your snapshot"}}>
+With the CLI associated with your Cloud project, and your target database defined, you're now ready to restore your snapshot into your database to code against.
+
+Run `snaplet snapshot restore` or `snaplet ss restore --latest` to restore your snapshot into your target database.
+
+You may be prompted to confirm that your snapshot will overwrite your target database if you're not using a local database. 
+</Step>
+
+### Snapshot restoration complete
+<Step image={{ src: "/getting-started/quick-start/quick-start-16.png", alt: "Restoration complete"}}>
+The Snaplet CLI will provide an update to the restoration process, and notify you on completion. You can now code against your snapshot data in your target database!
+
+You can view your database in your preferred database viewer to verify that Snaplet has successfully and safely transformed all the potentially sensitive data from your source database if you opted to transform this data earlier. 
+</Step>
+</Steps>
+
+## Next Steps
+You can modify each step of the Snaplet snapshot workflow to exercise more granular control over the snapshot creation and capture process to get exactly the data you need for your use case.
+
+For more control over how your snapshot captures data from your source database, including selecting and excluding specific tables, check out the [capture guide](/snapshot/core-concepts/capture#select-data)
+
+To learn how to modify your data transformations, including how to use [`@snaplet/copycat`](https://github.com/snaplet/copycat) to seed realistic, deterministic values, check out the [data transformation guide](/snapshot/core-concepts/capture#select-data)
+
+For more options and granular control over snapshot restoration, check out the Snaplet [restore guide](/snapshot/core-concepts/restore#more-granular-control-over-restorations).

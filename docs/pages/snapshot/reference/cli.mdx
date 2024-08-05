@@ -1,0 +1,265 @@
+
+# CLI Commands
+
+You can use the Command-Line Interface (CLI) provided by npx @snaplet/snapshot to manage your data from a terminal window.
+
+## **config**
+
+The `npx @snaplet/snapshot config` command is used to manage configuration.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot config [action]
+```
+
+### **generate**
+
+The `npx @snaplet/snapshot config generate` command is used to generate configuration files.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot config generate
+```
+
+**Command Flags**
+
+| Name                | Alias | Description                                                 | Type    | Choices                          | Default  |
+| ------------------- | ----- | ----------------------------------------------------------- | ------- | -------------------------------- | -------- |
+| --type              | -t    |                                                             | string  | typedefs,transform,generate,keys | typedefs |
+| --dry-run           |       |                                                             | boolean |                                  | false    |
+| --connection-string |       | The connection string to use for introspecting the database | string  |                                  |          |
+
+### **list**
+
+The `npx @snaplet/snapshot config list` command is used to list config variables.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot config list
+```
+
+### **pull**
+
+The `npx @snaplet/snapshot config pull` command is used to pull cloud project config to local.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot config pull
+```
+
+**Command Flags**
+
+| Name   | Alias | Type   | Choices                   | Default                   |
+| ------ | ----- | ------ | ------------------------- | ------------------------- |
+| --type | -t    | string | config,typedefs,publicKey | config,typedefs,publicKey |
+
+### **push**
+
+The `npx @snaplet/snapshot config push` command is used to push local project config to cloud.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot config push
+```
+
+**Command Flags**
+
+| Name   | Alias | Type   | Choices          | Default          |
+| ------ | ----- | ------ | ---------------- | ---------------- |
+| --type | -t    | string | config,publicKey | config,publicKey |
+
+
+## **discord**
+
+The `npx @snaplet/snapshot discord` command is used to open the npx @snaplet/snapshot Discord chat window in your browser.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot discord
+```
+
+## **documentation**
+
+The `npx @snaplet/snapshot documentation` command is used to open the npx @snaplet/snapshot Documentation in your browser.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot documentation
+```
+
+### **setup**
+
+The `npx @snaplet/snapshot project setup` command is used to set up a project.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot project setup [project-id]
+```
+
+**Command Args**
+
+| Name      | Description    | Type   |
+| --------- | -------------- | ------ |
+| projectId | The project id | string |
+
+## **generate**
+
+The `npx @snaplet/snapshot generate` command is used to:
+* regenerate the assets needed by [`@snaplet/seed`](/core-concepts/seed)
+* regenerate the typedefs needed for `snaplet.config.ts`.
+
+npx @snaplet/snapshot will look at your database and generates a library that corresponds to your database structure. You would typically run this whenever you have changed your database structure, so that the assets used by `@snaplet/seed` correspond to your new database structure.
+
+If you are familiar with [`@prisma/client`](https://www.prisma.io/docs/concepts/components/prisma-client), you can think of `npx @snaplet/snapshot generate` doing the same thing, just in this case for `@snaplet/seed` rather than `@prisma/client`.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot generate
+```
+
+**Command Flags**
+
+| Name                | Description                                                 | Type    | Default |
+| ------------------- | ----------------------------------------------------------- | ------- | ------- |
+| --output            | A custom directory path to output the generated assets to   | string  |         |
+| --connection-string | The connection string to use for introspecting the database | boolean | false   |
+
+## **setup**
+
+The `npx @snaplet/snapshot setup` command is used to Initialize or connect an existing npx @snaplet/snapshot project.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot setup
+```
+
+## **snapshot**
+
+The `npx @snaplet/snapshot snapshot` command is used to manage snapshots.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot snapshot [action]
+```
+
+### **capture**
+
+The `npx @snaplet/snapshot snapshot capture` command is used to capture a new snapshot.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot snapshot capture [destination-path]
+```
+
+**Command Flags**
+
+| Name             | Alias         | Description                                  | Type   | Choices            |
+| ---------------- | ------------- | -------------------------------------------- | ------ | ------------------ |
+| --message        | -m            | Attach a message to the snapshot             | string |                    |
+| --subset         | --subset-path | Path to a subset config file                 | string |                    |
+| --tags           |               | Attach tags to the snapshot                  | array  |                    |
+| --transform-mode | -t            | Transformation mode to apply to the snapshot | string | strict,unsafe,auto |
+
+### **create**
+
+The `npx @snaplet/snapshot snapshot create` command is used to create a snapshot in cloud.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot snapshot create
+```
+
+**Command Flags**
+
+| Name   | Type    | Default |
+| ------ | ------- | ------- |
+| --json | boolean | false   |
+
+### **list**
+
+The `npx @snaplet/snapshot snapshot list` command is used to list all snapshots.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot snapshot list
+```
+
+**Command Flags**
+
+| Name   | Type  |
+| ------ | ----- |
+| --tags | array |
+
+### **restore**
+
+The `npx @snaplet/snapshot snapshot restore` command is used to restore a snapshot.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot snapshot restore [snapshot-name|snapshot-path]
+```
+
+**Command Args**
+
+| Name                        | Description                             | Type   |
+| --------------------------- | --------------------------------------- | ------ |
+| snapshot-name|snapshot-path | the unique name or path of the snapshot | string |
+
+**Command Flags**
+
+| Name             | Alias | Description                                                               | Type    | Deprecated | Default |
+| ---------------- | ----- | ------------------------------------------------------------------------- | ------- | :--------: | ------- |
+| --data           |       | Restore data on the database (skip with --no-data)                        | boolean |            | true    |
+| --schema         |       | Restore schema on the database (skip with --no-schema)                    | boolean |            | true    |
+| --reset          |       | Drop destination database before restoring schemas (skip with --no-reset) | boolean |            | true    |
+| --tags           |       | Filter snapshots by tags                                                  | array   |            |         |
+| --latest         |       | Restore the latest snapshot                                               | boolean |            | false   |
+| --yes            | -y    | Performs a restore without a confirmation message                         | boolean |            | false   |
+| --tables         |       | Restore only the specified tables to the target database                  | array   |            |         |
+| --exclude-tables |       | Exclude the specified tables from being restored to the target database   | array   |            |         |
+| --progress       |       | Report the restore progress into the terminal (silence with --no-progress)| boolean |            | true    |
+
+### **create**
+
+The `npx @snaplet/snapshot team create` command is used to create a new team.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot team create <name>
+```
+
+## **upgrade**
+
+The `npx @snaplet/snapshot upgrade` command is used to upgrade this binary.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot upgrade
+```
+
+## **completion**
+
+The `npx @snaplet/snapshot completion` command is used to generate completion script.
+
+**Usage**
+
+```bash >_&nbsp;terminal
+npx @snaplet/snapshot completion
+```

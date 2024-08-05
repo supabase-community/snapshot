@@ -1,0 +1,28 @@
+# Self-hosting
+
+Snaplet can be self-hosted within your own trusted infrastructure.
+
+## Generate your configuration file
+
+In order to tell Snaplet how to select, transform and subset your data you need to generate a `snaplet.config.ts` file along with its types based on your source database schema.
+
+```bash >_&nbsp;terminal
+SNAPLET_SOURCE_DATABASE_URL='postgres://username:password@acme.com:5432/production_database' npx snaplet config generate --type typedefs --type transform
+```
+
+## Capture snapshots
+
+Once you're happy with your configuration, you can capture a snapshot of your source database.
+
+```bash >_&nbsp;terminal
+SNAPLET_SOURCE_DATABASE_URL='postgres://username:password@acme.com:5432/production_database' npx snaplet snapshot capture /tmp/my-snapshot
+```
+
+
+## Restore snapshots
+
+You can restore a snapshot to a target database.
+
+```bash >_&nbsp;terminal
+SNAPLET_TARGET_DATABASE_URL='postgres://username:password@localhost:5432/development_database' npx snaplet snapshot restore /tmp/my-snapshot
+```

@@ -1,0 +1,26 @@
+# Prisma
+
+Prisma Migrations creates the database structure, and Snaplet restores the data.
+
+```bash >_&nbsp;terminal
+prisma migrate dev
+snaplet restore --no-reset --no-schema
+```
+
+If you don't want to run two commands, you can automatically seed the database with data, after running `prisma migrate reset` or `prisma migrate dev`, by adding the following to your `package.json` file.
+
+```json package.json
+"prisma": {
+  "seed": "snaplet snapshot restore -y"
+}
+```
+
+Learn ["how to seed your database in Prisma"](https://www.prisma.io/docs/guides/database/seed-database#how-to-seed-your-database-in-prisma) from their documentation.
+
+## Limitations to consider
+There are a few things to keep in mind when running this feature:
+1. Backwards incompatible table changes will result in no data being restored for the entire table. Backwards incompatible changes include but aren't limited to: removed columns or newly added columns that do not have any default values. The result of attempting a restoration with the `--no-reset --no-schema` flags, given the above changes will result in an empty table.
+2. Under the hood, Snaplet relies on `CREATE DATABASE ... WITH TEMPLATE` for cloning the current database as part of the restoration, even though we subsequently clear the tables. We do this so we can preserve the original table IDs. This implementation detail may cause performance issues for large databases. If you do experience any performance issues, please reach out and [let us know](https://app.snaplet.dev/chat).
+3. Any previous data will be cleared from each table that exists in the snapshot – this will occur in a cascading fashion where related rows in other tables will also be cleared. Any rows in tables added since the last snapshot will be kept as is, with the exception of rows with relations to data in the snapshot tables that are cleared – those will be cleared too.  Bare in mind that you are able to opt for a backup of your existing database (of which is currently `true` by default) .
+4. If any tables were removed since the last snapshot, the rest of the restoration will continue.
+5. Any failed database operations that occurred during the restoration (e.g. the removal of a table) will be logged to the `restore.log` and the first three log entries will be show in the console.

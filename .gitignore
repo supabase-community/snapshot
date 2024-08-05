@@ -57,3 +57,6 @@ out
 .parcel-cache
 .snaplet/snaplet.d.ts
 cli/scripts/predictions/.yarn/*
+
+docs/.next
+docs/node_modules

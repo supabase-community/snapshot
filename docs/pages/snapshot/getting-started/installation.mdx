@@ -1,0 +1,27 @@
+import { Tabs, Tab } from "nextra/components";
+
+# Installation
+
+Snaplet can be run using `npx` from [npm](https://www.npmjs.com/), or installed and run as a standalone binary:
+
+<Tabs items={["npx", "curl"]}>
+  <Tab>
+  ```bash >_&nbsp;terminal
+  # Set up Snaplet with npx
+  npx snaplet setup
+  ```
+  </Tab>
+  <Tab>
+  ```bash >_&nbsp;terminal
+  # Set up Snaplet as a static binary
+  curl -sL https://app.snaplet.dev/get-cli/ | bash
+  snaplet setup
+  ```
+  </Tab>
+</Tabs>
+
+From there, Snaplet can either be self-hosted or accessed as a web app via our cloud service, Snaplet cloud. The choice is yours!
+
+We recommend beginning with [Snaplet cloud](https://snaplet.dev). Sign up for free and start utilizing your data in mere minutes!
+
+For those looking to delve deeper or self-host Snaplet, check out our [self-hosting guide](/snapshot/guides/self-hosting).
