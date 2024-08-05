@@ -1,0 +1,46 @@
+# Connection Strings
+
+In order to connect to your source database, Snaplet needs read-only database credentials in the form of a connection string, or connection URL.
+
+A PostgreSQL connection URL specifies the following parameters:
+
+* **username** (the username used to connect to the database)
+* **password** (the password used in the "user" parameter)
+* **hostname** (the IP address or domain name of the machine where the server is running)
+* **port** (port number on which the server is listening on)
+* **database** (name of the database to connect to)
+
+This connection string may also include a collection of optional parameter keywords that allow adjustments of various aspects of the URL (e.g. SSL, timeouts, etc).
+
+Here's an example connection string:
+
+```bash
+postgresql://username:password@hostname:5432/database_name
+```
+
+### Troubleshooting connection strings
+
+When passing in a connection string to Snaplet, we will attempt to validate and encode the connection string, however you may still have problems with database names or passwords and special characters **`(%&/:=?@[])`**, in this case you may have to URI encode your username and/or your password.
+
+Let's take an example in which your database password is `p@$$w0rd!`.
+
+You first need to encode the password using [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) or [jq](https://jqlang.github.io/jq/):
+
+```bash >_&nbsp;terminal
+# encodeURIComponent
+node -e 'console.log(encodeURIComponent("p@$$w0rd!"))'
+p%40%24%24w0rd!
+
+# jq
+printf %s 'p@$$w0rd!' | jq -sRr @uri
+p%40%24%24w0rd!
+```
+
+You can then paste the encoded password into your connection string:
+
+```bash >_&nbsp;terminal
+# focus[52:66]
+SNAPLET_SOURCE_DATABASE_URL='postgresql://john-doe:p%40%24%24w0rd!@hostname:5432/production' snaplet snapshot capture
+```
+
+If you still have problems configuring your connection string, refer to this [short guide](https://www.prisma.io/dataguide/postgresql/short-guides/connection-uris) or reach out to us on [discord](https://app.snaplet.dev/chat) instead.

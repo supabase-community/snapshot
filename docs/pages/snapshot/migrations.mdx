@@ -1,0 +1,17 @@
+# Snapshot migration
+
+## From `0.71.0` and above
+
+We fixed a long-standing bug in the snapshot capture and restore process about `NULL` values.
+
+If you captured a snapshot with a version of Snaplet CLI below `0.71.0`, you can either:
+
+- Capture a new snapshot, which will save it to the new fixed format (recommended):
+```bash >_&nbsp;terminal
+npx snaplet@latest snapshot capture
+```
+
+- Or run the restore command with the last version of Snaplet CLI before the fix:
+```bash >_&nbsp;terminal
+npx snaplet@0.70.1 snapshot restore
+```

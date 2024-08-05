@@ -1,0 +1,170 @@
+import { Callout } from "nextra/components";
+
+# Supabase
+
+![I absolutely love Supabase!](/recipes/supabase/snappy-holding-supabase-logo.svg)
+
+<Callout>
+For restoring data into your Supabase project, only the `public` and `auth` schemas are supported. If you experience any issues with any of the paths, reach out to us on [Discord](https://app.snaplet.dev/chat).
+</Callout>
+
+## Restoring to a Supabase local development stack
+
+Supabase makes it easy to start a project with a dedicated PostgreSQL database. However, achieving a development environment populated with data closely resembling producation, still requires some set up.
+This guide will help you restore a snapshot of your production database into your local development stack.
+
+#### 1. Connect your source database (Production Database)
+
+Navigate to https://www.snaplet.dev and sign up for a new account (it's free). Once you have successfully signed up for a new account, you'll begin the onboarding process...
+
+![Snaplet onboarding select team name](/recipes/supabase/onboarding_start.webp)
+
+On the “Connect database” step click on "Connect Supabase" to connect your Supabase account to Snaplet. Proceed through all the steps of authorizing your Supabase organization, select a project and then enter the password associated to the project.
+
+![Snaplet onboarding connect your database](/recipes/supabase/connect_to_supabase.webp)
+
+> The snapshot configuration generated during onboarding will be set to only capture the `public` and `auth` schemas. Learn more [below](#excluding-specific-schemas-from-snapshots).
+
+#### 2: Create a snapshot
+
+Continue to the next steps:
+
+- Subsetting (skipping will create a snapshot with all your data).
+- Transforming (skipping will leave all your table columns untouched).
+
+Once you have gone through all these steps, a new snapshot process will start and you will now be on the “capture step.” Wait for it to finish - this is the snapshot you will restore into your **target database.**
+
+![Snaplet onboarding capturing your database](/recipes/supabase/onboarding_capture.webp)
+
+#### 3: Set up your Supabase local development stack
+
+Below is a summary of commands you will have to run in your terminal to get Supabase set up on your local machine. For more detailed steps you can visit the Supabase docs [here](https://supabase.com/docs/guides/cli/local-development).
+
+```bash >_&nbsp;terminal
+# log in to the Supabase CLI
+supabase login
+
+# initialize your Supabase configuration in your project folder
+supabase init
+
+# with docker running, start your Supabase services
+supabase start
+```
+
+Running `supabase start` will output your Supabase credentials, copy the **DB_URL** field, as we will paste it in your `snaplet.config.ts` file (step 5).
+
+```bash >_&nbsp;terminal
+Started supabase local development setup.
+
+         API URL: http://localhost:54321
+          DB URL: postgresql://postgres:postgres@localhost:54322/postgres
+      Studio URL: http://localhost:54323
+    Inbucket URL: http://localhost:54324
+        anon key: eyJh......
+service_role key: eyJh......
+```
+
+#### 4: Install the Snaplet CLI
+
+1. Open your terminal and run `curl -sL https://app.snaplet.dev/get-cli/ | bash`
+2. Run `snaplet auth login`
+3. Navigate to `https://app.snaplet.dev/access-token/cli` to get your access token.
+4. Paste the access token in the terminal.
+
+#### 5: Config setup
+
+1. Navigate to your project directory.
+
+2. Set up your snaplet config.
+
+```bash >_&nbsp;terminal
+snaplet setup
+```
+
+```bash >_&nbsp; terminal
+# mark
+✔ Welcome to Snaplet! 😸 Choose your adventure: › I want to capture or restore a snapshot 💾
+
+Target database credentials
+Snaplet restores data to your target database using the target database credentials.
+
+Read more: https://docs.snaplet.dev/guides/postgresql#connection-strings
+
+# mark
+✔ Target database connection string … postgresql://postgres:postgres@localhost:54322/postgres
+📡 Connected to database with "[secret]ql://postgres:postgres@localhost:54322/postgres"
+
+# mark
+✔ Select or create a project › My Team > My Project
+
+You're all set! Take a look at our docs to find out what you can do from here:
+https://docs.snaplet.dev/getting-started/start-here/
+
+Restore latest snapshot:
+To restore the latest snapshot in your project execute the command:
+snaplet ss restore --latest
+
+Local capture:
+You can learn more about self hosting here: https://docs.snaplet.dev/guides/self-hosting
+
+To capture a snapshot of your local database first pull the full configuration with:
+snaplet config pull
+
+Then capture the snapshot with:
+SNAPLET_SOURCE_DATABASE_URL=<database-url> snaplet ss capture
+```
+
+#### 6: Restore the data target
+
+You are now ready to restore!
+
+1. Run `snaplet snapshot restore` in your project path.
+
+> **Note:** for supabase projects we automatically include the `--no-reset` flag when running `snaplet snapshot restore`. So no existing schemas will be dropped. Learn more about data operations [here](/core-concepts/capture)
+
+![Supabase is fun!](/recipes/supabase/snappy-with-supabase-ball.svg)
+
+### All done!
+
+If you want to learn more about Snaplet, you can explore our docs. If you have any questions, reach out to us on [Discord](https://app.snaplet.dev/chat).
+
+That's it! You're all done, and should have restored a version of your Supabase production database with transformed data into your target database. You can now code against production-realistic data.
+
+### Troubleshooting
+
+#### Excluding specific schemas from snapshots
+
+Snaplet does not support restoring all the schemas in a Supabase instance. By default your config will be set to only capture the `public` and `auth` schemas.
+You can manually include other schemas, but this is not a supported use case for this integration.
+
+> Schemas such as `storage` and `supabase_functions` schemas are excluded, because Snaplet is unable to also the clone the infrastructure required to support these schemas.
+
+Your snapshot config should look something like this:
+
+```ts snaplet.config.ts
+defineConfig({
+  select: {
+    $default: false,
+    public: true,
+    auth: true,
+    // you can manually include schemas here, e.g: when you enable an extension and that
+    // extension creates a schema. Note: including any other schemas other than the "public"
+    // and "auth" schemas, may break the state of your Supabase project.
+  }
+})
+```
+
+During onboarding, this `select` option is automatically added to your config. In the web editor you will be shown a warning, if you choose to remove the `$default` field.
+
+#### Reset supabase database
+
+Use the `supabase db reset` command to reset the state of your Supabase project.
+This is useful for cases a snapshot breaks your project, or you want to start from a clean slate.
+
+```bash >_&nbsp;terminal
+# reset your supabase database
+supabase db reset
+
+# restore your snapshot
+snaplet snapshot restore
+```
