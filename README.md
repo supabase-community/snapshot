@@ -1,115 +1,53 @@
-# Snaplet
+# Snaplet Snapshots
 
-Everything you see here is everything we have: our codebase is a monorepo that is
-split into "sides:"
+## Introduction
 
-1. `cli`: What developers install on their computers to interact with the API and their databases.
-2. `packages`: Shared code between "sides."
+Snapshots are database snapshots captured from an existing database that you can access (typically production). Snapshots can be subset (reduced in size), and the source data can be transformed to meet your requirements (for example, obfuscating personally identifiable information). Snapshots are restored into a database as part of your workflow, whether that's your local coding environment or CI/CD.
 
-## Installation
+## Documentation
 
-We use yarn v3 as our package manager, it's great for those of us who have not-so-great Internet connections, because it stores a global cache of the packages on your local machine.
-
-```terminal
-yarn install
-```
-
-Besides that you have all the credentials that you require in `.env.defaults`. These are development only credentials. We do not share production credentials.
+The Snaplet snapshot documentation can be found [here](https://docs.snaplet.dev/snapshot/getting-started/overview).
 
 ## Getting started
 
-First, you'll need PostgreSQL and brotli installed and running on your machine. If you're using OSX and homebrew:
+To get started with Snaplet snapshots, follow these steps:
 
-```terminal
-brew install postgresql@15
-brew services start postgresql@15
-brew install libpq
-brew install brotli
+1. Configure your Snaplet CLI by running the following command:
 
-# if you do not yet have a `postgres` role with these role attributes
-psql postgres -c 'create role postgres WITH SUPERUSER CREATEDB CREATEROLE LOGIN'
-```
+  ```terminal
+  npx @snaplet/snapshot setup
+  ```
 
-Next, you'll need the production Snaplet CLI up and running so that you can bootstrap your dev environment - using Snaplet itself to restore a database snapshot:
+2. To capture a new snapshot, you will have to define your source database with the `SNAPLET_SOURCE_DATABASE_URL` environment variable. Capture a new snapshot by running the following command:
 
-1. Get invited to "Snaplet" on "Snaplet Cloud": Once you have CLI installed, you'll need an invite link for [Snaplet Cloud](app.snaplet.dev) If you do not have one yet, ask for one in #product on Discord.
-2. Join "Snaplet" on Snaplet Cloud: Visit the invite link and follow the onboarding steps, you should land on the dashboard page, and be part of the Snaplet team on Snaplet Cloud.
-3. Login the Snaplet CLI: Run `yarn snaplet auth setup` in the root of the monorepo and follow the steps.
-4. Restore a snapshot: Run `yarn snaplet snapshot restore`, in the root of the monorepo.
+  ```terminal
+ SNAPLET_SOURCE_DATABASE_URL='' npx @snaplet/snapshot snapshot capture
+  ```
 
-At this point you'll have a bootstrapped dev environment, and are ready to start it up!
+> Note: Replace `SNAPLET_SOURCE_DATABASE_URL` with your source database URL. Example: `postgresql://USER:PASSWORD@REMOTE_DB_HOST:PORT/DB_NAME`
 
-```terminal
-yarn dev
-```
+3. List all available snapshots by running the following command:
 
-We run the API and WEB sides via pm2, when you make changes the code is rebuilt, and the changes are reloaded.
+  ```terminal
+  npx @snaplet/snapshot snapshot ls
+  ```
 
-Whilst working on the CLI you can use the `yarn dev` command to see test your latest changes. It uses the last created `Database` as a starting point:
+4. Restore a snapshot to your source database by running the following command:
 
-```terminal
-cd cli
-yarn dev ls
-```
+  ```terminal
+  npx @snaplet/snapshot snapshot restore
+  ```
 
-Note: If you make changes in the packages/sdk folder you have to rebuild the sdk to use it in the api:
+That's it! You're now ready to use Snaplet snapshots in your workflow.
 
-```
-cd api
-yarn workspace @snaplet/sdk build
-```
-
-If you want to use a specific database use the `SNAPLET_PROJECT_ID` envar:
-
-```
-cd cli
-SNAPLET_PROJECT_ID=xxx-xxx yarn dev ls
-```
-
-## [Release process](https://www.loom.com/share/9561c964bc454065b19dd779393995c8)
-
-Here's a video showing our current release process for snaplet CLI, `@snaplet/seed` and `@snaplet/sdk`: https://www.loom.com/share/9561c964bc454065b19dd779393995c8
-
-## Deploy process
-For API and web, changes in PRs are deployed automatically when they land on the `main` branch.
-
-You can inspect the logs for the deploy on papertrail: https://my.papertrailapp.com/groups/26388041/events?q=program%3Adeploy
-
-# Testing and debugging
-
-## Command Line Interface (CLI) - End-to-End (E2E) Tests
-
-To execute all end-to-end tests in the CLI package, follow these steps:
-```
-cd cli
-yarn test:e2e
-```
-To run a specific test, use the following command:
-```
-test:debug e2e/mytest.test.ts
-```
-This will execute the test without a timeout in a single thread, and you can use the debugger.
-
-## Using the Debugger in Visual Studio Code (VSCode)
-Follow these steps to use the debugger in VSCode:
-
-1. Enable the debugger by Pressing `Cmd+Shift+P` and search for `Debug: Toggle auto attach` and select `smart`
-2. Open a new `Javascript Debug Terminal` by pressing `Cmd+Shift+P` and search for `Terminal: Create New Integrated Terminal` and select `Javascript Debug Terminal`'
-3. Add a breakpoint in the code you want to debug
-4. Run the test you want to debug with `yarn test:debug e2e/mytest.test.ts`
-
-**_NOTE:_** If you want to see the debug logs when running the test you add add the `DEBUG` env var to the test command like this: `DEBUG=snaplet:* yarn test:debug e2e/mytest.test.ts`
-
-# Monorepo remaining tasks
-- [ ] Solid ESBuild configuration (mostly autofixable)
-- [ ] Usage of imports map instead of TypeScript paths aliases
+For more information, refer to the [Snaplet snapshot documentation](https://docs.snaplet.dev/snapshot/getting-started/overview).
 
 
 # Contribution
 
 ## Setup
 
-First, you'll need PostgreSQL and brotli installed and running on your machine. If you're using OSX and homebrew:
+First, you'll need PostgreSQL and brotli installed and running on your machine. If you're using macOS and Homebrew:
 
 ```terminal
 brew install postgresql@15
@@ -126,22 +64,22 @@ node --version
 v20.15.1
 ```
 
-Make sure you have `yarn` version above 3.5.0 installed, on MacOS `yarn` comes with `corepack`:
+Make sure you have `yarn` version above 3.5.0 installed. On macOS, `yarn` comes with `corepack`:
 ```
 corepack enable
 yarn --version
 3.5.0
 ```
 
-In root directory run:
+In the root directory, run:
 ```
 yarn install
 yarn build
 ```
 
-## Test cli
+## Test CLI
 
-Create new directory and setup database (Usually local development database):
+Create a new directory and set up the database (usually the local development database):
 ```
 mkdir test
 cd test
@@ -162,7 +100,30 @@ ss-fluffy-microwave-143354    SUCCESS    just now    15.3 MB            💻
 Found 1 snapshot
 ```
 
-Restore to your source database (Specified during `setup`):
+Restore to your source database (specified during `setup`):
 ```
 node ../cli/dist/index.js ss restore
 ```
+
+
+
+## [Release process](https://www.loom.com/share/9561c964bc454065b19dd779393995c8)
+
+1. Make a PR that updates the version in the `cli/package.json` file.
+
+2. Once merged into main, add a git tag with the version number specified in step 1. For example, if the version is `0.93.4`, run:
+```terminal
+git tag v0.93.4
+```
+
+3. Push the tag to the remote repository:
+```terminal
+git push --tags
+```
+
+4. A draft release will be created on GitHub. Once the npm package is ready, edit the release notes and publish the release.
+
+[Here](https://www.loom.com/share/9561c964bc454065b19dd779393995c8) is a video showing our current release process for the Snaplet Snapshot CLI.
+
+
+
