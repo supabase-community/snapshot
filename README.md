@@ -6,7 +6,7 @@ Snapshots are database snapshots captured from an existing database that you can
 
 ## Documentation
 
-The Snaplet snapshot documentation can be found [here](https://docs.snaplet.dev/snapshot/getting-started/overview).
+The Snaplet snapshot documentation can be found [here](https://snaplet-snapshot.netlify.app/snapshot/getting-started/overview).
 
 ## Getting started
 
@@ -40,7 +40,7 @@ To get started with Snaplet snapshots, follow these steps:
 
 That's it! You're now ready to use Snaplet snapshots in your workflow.
 
-For more information, refer to the [Snaplet snapshot documentation](https://docs.snaplet.dev/snapshot/getting-started/overview).
+For more information, refer to the [Snaplet snapshot documentation](https://snaplet-snapshot.netlify.app/snapshot/getting-started/overview).
 
 
 # Contribution
