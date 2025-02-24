@@ -76,6 +76,6 @@
     "upgrade-deps": "yarn upgrade-interactive"
   },
   "engines": {
-    "node": "18.18.2"
+    "node": "20.15.1"
   }
 }
