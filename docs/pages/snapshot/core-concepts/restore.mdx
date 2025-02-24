@@ -64,6 +64,7 @@ The follow opt-out flags can be used to omit steps in the restoration process.
 1. Don't drop the **target database** : `--no-reset`
 2. Don't restore the schemas on the **target database:** `--no-schema`
 3. Don't restore the data on the **target database:** `--no-data`
+4. Don't truncate tables before importing data: `--no-truncate`
 
 Opt-out flags are appended to the `snaplet snapshot restore` command:
 

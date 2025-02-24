@@ -73,6 +73,12 @@ export const restoreAction: CommandModule<unknown, CommandOptions> = {
         },
         default: [],
       })
+      .option('truncate', {
+        type: 'boolean',
+        default: true,
+        description: 'Whether to truncate tables before importing data (skip with --no-truncate)',
+        negatable: true,
+      })
   },
   async handler(options) {
     const { handler } = await import('./restoreAction.handler.js')
