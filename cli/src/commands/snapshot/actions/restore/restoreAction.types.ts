@@ -10,4 +10,5 @@ export interface CommandOptions {
   excludeTables: string[]
   progress: boolean
   isResetExplicitlySet: boolean
+  truncate?: boolean
 }

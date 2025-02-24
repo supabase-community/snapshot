@@ -129,7 +129,7 @@ export async function handler(options: CommandOptions) {
   const dataRestoreSteps = [
     filterTables,
     dropConstraints,
-    truncateTables,
+    ...(options.truncate !== false ? [truncateTables] : []),
     importTablesData,
     createConstraints,
     fixViews,
