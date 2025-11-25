@@ -20,7 +20,7 @@
     "@snaplet/copycat": "5.0.0",
     "monaco-editor": "0.47.0",
     "monaco-editor-auto-typings": "0.4.5",
-    "next": "14.1.4",
+    "next": "14.2.10",
     "nextra": "2.13.4",
     "nextra-theme-docs": "2.13.4",
     "react": "18.2.0",
